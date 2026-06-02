@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AnomlyX - Defect Detail: Porosity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#131b2e",
+                        "on-secondary-container": "#5c2400",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "primary": "#000000",
+                        "on-secondary-fixed": "#341100",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary-container": "#76859b",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#d5e3fd",
+                        "tertiary-fixed-dim": "#b9c7e0",
+                        "on-tertiary-fixed": "#0d1c2f",
+                        "secondary-container": "#fd761a",
+                        "on-tertiary-fixed-variant": "#3a485c",
+                        "secondary-fixed-dim": "#ffb690",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface": "#0b1c30",
+                        "on-primary-container": "#7c839b",
+                        "secondary-fixed": "#ffdbca",
+                        "inverse-surface": "#213145",
+                        "surface-variant": "#d3e4fe",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "surface-container": "#e5eeff",
+                        "primary-container": "#131b2e",
+                        "outline": "#76777d",
+                        "inverse-primary": "#bec6e0",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#565e74",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#000000",
+                        "secondary": "#9d4300",
+                        "on-secondary-fixed-variant": "#783200",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary-container": "#0d1c2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "xl": "40px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .severity-low { border-left: 4px solid #10b981; }
+        .severity-medium { border-left: 4px solid #f59e0b; }
+        .severity-high { border-left: 4px solid #ef4444; }
+        .coordinate-overlay {
+            position: absolute;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 2px 4px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-bright flex justify-between items-center w-full px-margin-desktop h-16 z-50 border-b border-outline-variant fixed top-0 left-0">
+<div class="flex items-center gap-xl">
+<span class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">AnomlyX</span>
+<nav class="hidden md:flex gap-lg h-full items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 py-2" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 py-2" href="#">Manual Diagnosis</a>
+<a class="text-primary border-b-2 border-secondary-container font-bold pb-1 transition-all" href="#">Defect Library</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="bg-surface-container-low border border-outline rounded-lg pl-10 pr-4 py-1 text-label-md focus:ring-2 focus:ring-secondary-container outline-none transition-all" placeholder="Search components..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface hover:bg-surface-variant p-sm rounded-full">help_outline</button>
+<img alt="Engineer Profile" class="w-8 h-8 rounded-full border border-outline object-cover" data-alt="A close-up high-resolution portrait of a senior industrial engineer wearing protective glasses and a subtle smile. The lighting is crisp and cool-toned, echoing a modern laboratory or advanced manufacturing floor. The background is a soft-focus industrial setting with blue and white highlights, maintaining a professional and reliable corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPUKSb-X4CQmahjbhILLdIPDk6HUTmytbaYF8q_3YdiJsNkwDR_J3-visHkTEYO4j2DtHXfobbJ9Whl-TNyosn8gpbW3Uo0CHfl1waO8X-mkugQUqqWWIbTyDwf6S0tErZ-NfM5kzWJYFOLbF-_fkVuAa-AdzsCe6YJkBm_5gSf9f5-Cga-NiWxZ0boSD5w_rtPCnG3I26z5sCm_lsushsUerXGkhfxJIYsM_m5vGrGf48iYI_BzK8sEKJiobFirqyFNbmMtWxag"/>
+</div>
+</header>
+<!-- Side Navigation Bar -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 py-lg px-md w-64 z-40 bg-surface-container border-r border-outline-variant mt-16">
+<div class="flex items-center gap-sm mb-lg px-sm">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white font-bold">A</div>
+<div>
+<p class="font-label-md text-label-md font-bold text-on-surface">Project Alpha</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Steel Line 04</p>
+</div>
+</div>
+<nav class="flex flex-col gap-base flex-1">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">biotech</span>
+<span class="font-label-md text-label-md">Inspection</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-lg flex flex-col gap-base">
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">print</span>
+<span class="font-label-md text-label-md">Export Logs</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-label-md text-label-md">System Status</span>
+</a>
+<button class="mt-md w-full bg-secondary text-white font-bold py-sm rounded-lg hover:brightness-110 active:scale-98 transition-all">New Inspection</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen px-margin-desktop pb-xl">
+<!-- Breadcrumb & Header -->
+<div class="py-lg">
+<nav class="flex items-center gap-xs text-label-md font-label-md text-on-surface-variant mb-base">
+<a class="hover:text-primary" href="#">Defect Library</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-bold">Porosity</span>
+</nav>
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface leading-tight">Porosity</h1>
+<p class="text-on-surface-variant max-w-2xl mt-sm">A collective term for small cavities, gas pockets, or pores within the metal structure, typically caused by gas entrapment during the solidification process.</p>
+</div>
+<button class="bg-secondary px-lg h-10 text-white font-medium text-label-md rounded-lg flex items-center gap-sm hover:brightness-110 transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">diagnosis</span>
+                    Use in Diagnosis
+                </button>
+</div>
+</div>
+<!-- Severity Tabs Strip -->
+<div class="bg-surface-container-low rounded-xl p-base flex gap-base border border-outline-variant mb-lg w-fit">
+<button class="px-lg py-sm rounded-lg bg-surface-container-highest text-primary font-bold transition-all" id="tab-low" onclick="switchSeverity('low')">Low Severity</button>
+<button class="px-lg py-sm rounded-lg text-on-surface-variant hover:bg-surface-container transition-all" id="tab-medium" onclick="switchSeverity('medium')">Medium Severity</button>
+<button class="px-lg py-sm rounded-lg text-on-surface-variant hover:bg-surface-container transition-all" id="tab-high" onclick="switchSeverity('high')">High Severity</button>
+</div>
+<!-- Comparison Section -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-lg mb-xl">
+<!-- Low Severity Column -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden flex flex-col severity-low shadow-sm">
+<div class="relative aspect-video bg-surface-dim">
+<img alt="Low Severity Porosity" class="w-full h-full object-cover grayscale brightness-90" data-alt="A microscopic, high-detail engineering cross-section of metal showing low-severity porosity. The surface is mostly smooth and uniform with tiny, isolated pinprick-sized circular voids. The lighting is stark and industrial, highlighting the metallic texture and clean edges. Monochrome tones of steel and grey dominate the palette, conveying a sense of precision and quality control." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcOLI_wdGk6n03VfzLG4h0DwnpcpH5NKF48Pc5BpcCbgTIcH85T91Cou98pRNmQwt1PQYxzX8orp342C-QFCpeu3a3UbMc-s16C32mcgUOuu19Kiuv9MYwpQJ0eEMoO6wVXMmcV1q-vl8-pLBKQOYHCAY-FdkY4WgAmns7QN-9PLgP8GdHMBNsol81M44A9pqvG0Z7yRLq1GXuUAk1y4xc6Np0S0s3_GBGBkpXky6jdt4Est9YCPMGcFYaC1w-MD1mLpF2OxPX-w"/>
+<div class="coordinate-overlay top-2 left-2">X: 124.0 | Y: 88.2</div>
+<div class="coordinate-overlay bottom-2 right-2">MAG 50X</div>
+</div>
+<div class="p-lg flex-1 flex flex-col gap-md">
+<div class="flex items-center justify-between">
+<span class="bg-green-100 text-green-800 text-[10px] font-bold px-sm py-1 rounded flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> LOW SEVERITY
+                        </span>
+<span class="text-label-sm font-label-sm text-outline">PINHOLE TYPE</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">Visual Signs</h3>
+<p class="text-on-surface-variant text-body-md">Sparse, isolated spherical voids &lt; 0.5mm. Surface appears largely continuous with minimal pitting.</p>
+</div>
+<div class="bg-surface-bright p-md rounded-lg">
+<h4 class="font-label-md text-label-md font-bold mb-xs">Primary Root Cause</h4>
+<p class="text-on-surface-variant font-label-md">Minor atmospheric moisture or slight contamination of surface coating.</p>
+</div>
+<div class="mt-auto">
+<h4 class="font-label-md text-label-md font-bold text-primary mb-xs">Recommended Remedy</h4>
+<ul class="text-label-md list-disc list-inside text-on-surface-variant space-y-1">
+<li class="">Surface pre-cleaning</li>
+<li class="">Optimize humidity controls</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Medium Severity Column -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden flex flex-col severity-medium shadow-sm">
+<div class="relative aspect-video bg-surface-dim">
+<img alt="Medium Severity Porosity" class="w-full h-full object-cover grayscale brightness-90" data-alt="A high-density industrial macro photograph of medium-severity porosity on a metallic surface. Numerous clusters of medium-sized circular voids and pits are visible, disrupting the metal's grain structure. The lighting is high-contrast, casting deep shadows within the pores. The aesthetic is clean but shows clear structural flaws, with a palette of cold blues and steel greys." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9JNnUmwbRS9tWFQyQXlfFLwW-96SDi25WJf61KJt15fOUX3KnDCG6ukbIAQkrQdToUcalf50BY7_GQ0xYu8emuZPSd948kjagYhYU7VhA18mK6ziPAwDXt_cTkO-djNUedTL0Sufnk3rayTgBIM6XuVOHK0Bsz0uIUWRpm5iATACaoryjR2d62dzrIfJ877sDxIyRh999PltF-cnjthjqjJOt-kSeThvtQDbQl_3SjoubG9yND5crNJNuR8rdsWSEFOD99eS0nQ"/>
+<div class="coordinate-overlay top-2 left-2">X: 442.1 | Y: 215.7</div>
+<div class="coordinate-overlay bottom-2 right-2">MAG 25X</div>
+</div>
+<div class="p-lg flex-1 flex flex-col gap-md">
+<div class="flex items-center justify-between">
+<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-sm py-1 rounded flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span> MEDIUM SEVERITY
+                        </span>
+<span class="text-label-sm font-label-sm text-outline">GAS POCKET TYPE</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">Visual Signs</h3>
+<p class="text-on-surface-variant text-body-md">Clustered voids (0.5mm - 1.5mm) in localized areas. Visible disruption of flow lines in the material.</p>
+</div>
+<div class="bg-surface-bright p-md rounded-lg">
+<h4 class="font-label-md text-label-md font-bold mb-xs">Primary Root Cause</h4>
+<p class="text-on-surface-variant font-label-md">Inadequate venting or excessive moisture in the mold/casting environment.</p>
+</div>
+<div class="mt-auto">
+<h4 class="font-label-md text-label-md font-bold text-primary mb-xs">Recommended Remedy</h4>
+<ul class="text-label-md list-disc list-inside text-on-surface-variant space-y-1">
+<li class="">Check vent obstruction</li>
+<li class="">Increase pre-heat temperature</li>
+<li class="">Check gas shielding flow</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- High Severity Column -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden flex flex-col severity-high shadow-sm">
+<div class="relative aspect-video bg-surface-dim">
+<img alt="High Severity Porosity" class="w-full h-full object-cover grayscale brightness-90" data-alt="A dramatic, extreme close-up of high-severity porosity in heavy-duty industrial casting. Large, irregular jagged cavities and honeycombed structures are visible deep within the metal material. The image has a harsh, forensic feel with deep shadows and sharp highlights on the metallic edges. The atmosphere is gritty and technical, emphasizing a critical structural failure." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFq-6BdfuXVwuHw1na5MDLsSiIBxI5TtxnA6B2O1L6OOrP1mTvjDl5AnGYGjpSwg2mUsSNBO9Q9RHf2HEPouWugrVFtqsiBri_MI6Rn--y_i_GqwVBC61PATwaYqWg7p7wP100NUOVMvN4-ity9WBPXXCEiU-G_YDFiGD-H30ED6jDi4yoycWFZIUaOa2BH4j3S0VpZNQndT3XSDF_cix0cy02BGK-uo1PWCj2Z0QRsMwvo8CEkWnTt9ArpoZP4w67eDnUSqtS9A"/>
+<div class="coordinate-overlay top-2 left-2">X: 981.5 | Y: 412.0</div>
+<div class="coordinate-overlay bottom-2 right-2">MAG 10X</div>
+</div>
+<div class="p-lg flex-1 flex flex-col gap-md">
+<div class="flex items-center justify-between">
+<span class="bg-red-100 text-red-800 text-[10px] font-bold px-sm py-1 rounded flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-red-600"></span> HIGH SEVERITY
+                        </span>
+<span class="text-label-sm font-label-sm text-outline">BLOWHOLE TYPE</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">Visual Signs</h3>
+<p class="text-on-surface-variant text-body-md">Large jagged cavities &gt; 2mm. Widespread honeycombing or complete cross-section weakening.</p>
+</div>
+<div class="bg-surface-bright p-md rounded-lg">
+<h4 class="font-label-md text-label-md font-bold mb-xs">Primary Root Cause</h4>
+<p class="text-on-surface-variant font-label-md">Severe gas contamination, massive vent failure, or incorrect alloy chemistry.</p>
+</div>
+<div class="mt-auto">
+<h4 class="font-label-md text-label-md font-bold text-primary mb-xs">Recommended Remedy</h4>
+<ul class="text-label-md list-disc list-inside text-on-surface-variant space-y-1">
+<li class="">Halt production line immediately</li>
+<li class="">Full system calibration</li>
+<li class="">Alloy purity analysis</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Information Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<!-- Common Causes & Processes -->
+<div class="bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<h2 class="font-headline-md text-headline-md mb-lg border-b border-outline-variant pb-sm">Engineering Analysis</h2>
+<div class="space-y-lg">
+<div>
+<h4 class="font-label-md text-label-md font-bold uppercase text-on-surface-variant mb-sm tracking-widest">Common Causes</h4>
+<div class="grid grid-cols-2 gap-md">
+<div class="p-md bg-surface-container-low border-l-4 border-primary rounded-r">
+<p class="font-bold text-label-md">Metallurgical Gas</p>
+<p class="text-label-sm text-on-surface-variant">Hydrogen/Nitrogen solubility shifts during cooling phases.</p>
+</div>
+<div class="p-md bg-surface-container-low border-l-4 border-primary rounded-r">
+<p class="font-bold text-label-md">Turbulence</p>
+<p class="text-label-sm text-on-surface-variant">Air entrapment due to high-velocity flow in narrow gates.</p>
+</div>
+</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-bold uppercase text-on-surface-variant mb-sm tracking-widest">Affected Processes</h4>
+<div class="flex flex-wrap gap-sm">
+<span class="px-md py-1 border border-outline rounded font-label-md text-on-surface">Die Casting</span>
+<span class="px-md py-1 border border-outline rounded font-label-md text-on-surface">Sand Casting</span>
+<span class="px-md py-1 border border-outline rounded font-label-md text-on-surface">MIG/TIG Welding</span>
+<span class="px-md py-1 border border-outline rounded font-label-md text-on-surface">3D Metal Printing (SLM)</span>
+</div>
+</div>
+<div class="bg-surface-container p-md rounded-lg">
+<div class="flex items-center gap-sm mb-sm">
+<span class="material-symbols-outlined text-secondary">info</span>
+<h4 class="font-label-md text-label-md font-bold">Standard Inspection Notes</h4>
+</div>
+<p class="text-body-md text-on-surface-variant italic leading-relaxed">
+                            "Porosity is often subsurface. X-ray or Ultrasonic testing is required for critical structural components. Surface visuals only represent 15-20% of total defect probability in casting batches."
+                        </p>
+</div>
+</div>
+</div>
+<!-- Prevention Checklist -->
+<div class="bg-white border border-outline-variant rounded-xl p-lg shadow-sm">
+<h2 class="font-headline-md text-headline-md mb-lg border-b border-outline-variant pb-sm">Prevention Checklist</h2>
+<div class="space-y-md">
+<label class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-all cursor-pointer group">
+<input checked="" class="mt-1 w-5 h-5 rounded border-outline text-primary-container focus:ring-primary" type="checkbox"/>
+<div>
+<p class="font-bold font-label-md">Verify Ingot Pre-heat (min. 150°C)</p>
+<p class="text-label-sm text-on-surface-variant">Eliminates surface condensation before melt transition.</p>
+</div>
+</label>
+<label class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-all cursor-pointer group">
+<input checked="" class="mt-1 w-5 h-5 rounded border-outline text-primary-container focus:ring-primary" type="checkbox"/>
+<div>
+<p class="font-bold font-label-md">Calibrate Shielding Gas Flow Rate</p>
+<p class="text-label-sm text-on-surface-variant">Maintain laminar flow to prevent air induction at the nozzle.</p>
+</div>
+</label>
+<label class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-all cursor-pointer group">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary-container focus:ring-primary" type="checkbox"/>
+<div>
+<p class="font-bold font-label-md">Mold Vent Cleaning Protocol</p>
+<p class="text-label-sm text-on-surface-variant">Check for carbon buildup every 500 cycles.</p>
+</div>
+</label>
+<label class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-all cursor-pointer group">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary-container focus:ring-primary" type="checkbox"/>
+<div>
+<p class="font-bold font-label-md">Environmental Humidity Log</p>
+<p class="text-label-sm text-on-surface-variant">Maintain floor humidity below 65% for high-purity casting.</p>
+</div>
+</label>
+<label class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-all cursor-pointer group">
+<input class="mt-1 w-5 h-5 rounded border-outline text-primary-container focus:ring-primary" type="checkbox"/>
+<div>
+<p class="font-bold font-label-md">Surface Degreasing Check</p>
+<p class="text-label-sm text-on-surface-variant">Visual inspection for oil/lubricant residue post-washing.</p>
+</div>
+</label>
+</div>
+<button class="mt-xl w-full border border-outline text-on-surface font-bold py-md rounded-lg hover:bg-surface-variant transition-all active:scale-98">
+                    View Comprehensive Technical Standards (ISO 10042)
+                </button>
+</div>
+</div>
+</main>
+<script>
+        function switchSeverity(level) {
+            const tabs = ['low', 'medium', 'high'];
+            tabs.forEach(tab => {
+                const el = document.getElementById('tab-' + tab);
+                if (tab === level) {
+                    el.classList.add('bg-surface-container-highest', 'text-primary', 'font-bold');
+                    el.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+                } else {
+                    el.classList.remove('bg-surface-container-highest', 'text-primary', 'font-bold');
+                    el.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+                }
+            });
+            // Scroll to columns if needed or just visual feedback
+            console.log('Severity focus switched to:', level);
+        }
+
+        // Simple atmospheric effect: Coordinate drift simulation
+        setInterval(() => {
+            document.querySelectorAll('.coordinate-overlay').forEach(el => {
+                if (el.textContent.includes('X:')) {
+                    const parts = el.textContent.split('|');
+                    let x = parseFloat(parts[0].replace('X:', ''));
+                    let y = parseFloat(parts[1].replace('Y:', ''));
+                    x = (x + (Math.random() * 0.02 - 0.01)).toFixed(1);
+                    y = (y + (Math.random() * 0.02 - 0.01)).toFixed(1);
+                    el.textContent = `X: ${x} | Y: ${y}`;
+                }
+            });
+        }, 100);
+    </script>
+</body></html>

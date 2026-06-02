@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnomlyX Diagnostic Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#diagnose" aria-label="AnomlyX home">
+      <span class="brand-mark">A</span>
+      <span>AnomlyX</span>
+    </a>
+    <nav class="topnav" aria-label="Primary navigation">
+      <a href="#diagnose" data-route="diagnose">Diagnose</a>
+      <a href="#library" data-route="library">Defect Library</a>
+      <a href="#report" data-route="report">Report</a>
+      <a href="#ai" data-route="ai">AI Upload</a>
+    </nav>
+    <span class="prototype-badge">Manual Prototype</span>
+  </header>
+
+  <main class="app-shell">
+    <aside class="sidebar">
+      <section class="line-card">
+        <span class="material-symbols-outlined">factory</span>
+        <div>
+          <strong>Project Alpha</strong>
+          <small>Steel Line 04</small>
+        </div>
+      </section>
+      <button class="side-link active" data-jump="diagnose">
+        <span class="material-symbols-outlined">biotech</span>
+        Manual Diagnosis
+      </button>
+      <button class="side-link" data-jump="library">
+        <span class="material-symbols-outlined">inventory_2</span>
+        Defect Library
+      </button>
+      <button class="side-link" data-jump="report">
+        <span class="material-symbols-outlined">print</span>
+        Report
+      </button>
+      <button class="side-link" data-jump="ai">
+        <span class="material-symbols-outlined">upload_file</span>
+        Future AI
+      </button>
+    </aside>
+
+    <section class="content">
+      <section class="page active" id="page-diagnose" data-page="diagnose">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Inspection workspace</p>
+            <h1>Manual Defect Diagnosis</h1>
+            <p>Select a defect and severity to generate root cause, remedy, and print-ready report details.</p>
+          </div>
+          <button class="primary-action" id="generateBtn">
+            <span class="material-symbols-outlined">manage_search</span>
+            Generate Diagnosis
+          </button>
+        </div>
+
+        <div class="diagnosis-grid">
+          <form class="panel input-panel" id="diagnosisForm">
+            <div class="panel-title">
+              <span class="material-symbols-outlined">tune</span>
+              <h2>Inspection Input</h2>
+            </div>
+
+            <label>
+              Defect Type
+              <select id="defectSelect"></select>
+            </label>
+
+            <fieldset>
+              <legend>Severity Level</legend>
+              <div class="segmented" id="severityGroup">
+                <button type="button" data-severity="low">Low</button>
+                <button type="button" data-severity="medium" class="active">Medium</button>
+                <button type="button" data-severity="high">High</button>
+              </div>
+            </fieldset>
+
+            <div class="thumb-row" id="severityThumbs" aria-label="Severity references"></div>
+
+            <div class="form-grid">
+              <label>
+                Inspector
+                <input id="inspectorInput" value="Student Inspector">
+              </label>
+              <label>
+                Batch ID
+                <input id="batchInput" value="B-2026-AX-01">
+              </label>
+              <label>
+                Material
+                <input id="materialInput" value="Steel">
+              </label>
+              <label>
+                Location
+                <input id="locationInput" value="Line 04">
+              </label>
+            </div>
+
+            <label>
+              Inspection Notes
+              <textarea id="notesInput" rows="4" placeholder="Add observations, surface condition, or process context."></textarea>
+            </label>
+
+            <div class="button-row">
+              <button type="button" class="primary-action" id="updateBtn">
+                <span class="material-symbols-outlined">check_circle</span>
+                Update Result
+              </button>
+              <button type="reset" class="ghost-action" id="resetBtn">
+                <span class="material-symbols-outlined">restart_alt</span>
+                Reset
+              </button>
+            </div>
+          </form>
+
+          <article class="panel result-panel">
+            <div class="result-visual">
+              <img id="resultImage" alt="Selected defect reference">
+              <span class="scan-label">Manual reference</span>
+              <span class="coordinate">X: 124.0 | Y: 88.2</span>
+            </div>
+
+            <div class="result-body">
+              <div class="result-heading">
+                <div>
+                  <p class="eyebrow">Diagnosis Result</p>
+                  <h2 id="resultTitle">Porosity</h2>
+                </div>
+                <span class="severity-pill medium" id="severityBadge">Medium</span>
+              </div>
+
+              <div class="result-section">
+                <span class="material-symbols-outlined">visibility</span>
+                <div>
+                  <h3>Visual Signs</h3>
+                  <p id="visualSigns"></p>
+                </div>
+              </div>
+
+              <div class="result-section">
+                <span class="material-symbols-outlined">psychology</span>
+                <div>
+                  <h3>Root Cause</h3>
+                  <p id="rootCause"></p>
+                </div>
+              </div>
+
+              <div class="result-section">
+                <span class="material-symbols-outlined">build</span>
+                <div>
+                  <h3>Engineering Remedy</h3>
+                  <p id="remedy"></p>
+                </div>
+              </div>
+
+              <div class="result-section">
+                <span class="material-symbols-outlined">rule</span>
+                <div>
+                  <h3>Prevention Checklist</h3>
+                  <ul id="preventionList"></ul>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button class="primary-action" id="printBtn">
+                  <span class="material-symbols-outlined">print</span>
+                  Print Report
+                </button>
+                <button class="ghost-action" id="saveBtn">
+                  <span class="material-symbols-outlined">save</span>
+                  Save Result
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" id="page-library" data-page="library">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Reference database</p>
+            <h1>Defect Library</h1>
+            <p>Browse known metal defects and use any entry directly in the manual diagnosis workflow.</p>
+          </div>
+          <label class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input id="librarySearch" placeholder="Search defects">
+          </label>
+        </div>
+        <div class="library-grid" id="libraryGrid"></div>
+      </section>
+
+      <section class="page report-page" id="page-report" data-page="report">
+        <div class="report-actions no-print">
+          <button class="ghost-action" data-jump="diagnose">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Back to Diagnosis
+          </button>
+          <button class="primary-action" id="reportPrintBtn">
+            <span class="material-symbols-outlined">print</span>
+            Print
+          </button>
+        </div>
+        <article class="report-sheet" id="reportSheet">
+          <header class="report-header">
+            <div>
+              <h1>AnomlyX</h1>
+              <p>Industrial Metal Defect Diagnostic Report</p>
+            </div>
+            <div class="report-meta">
+              <span id="reportId">AX-0001</span>
+              <span id="reportDate"></span>
+              <span id="reportInspector"></span>
+            </div>
+          </header>
+          <div class="summary-table">
+            <div><small>Defect Type</small><strong id="reportDefect"></strong></div>
+            <div><small>Severity</small><strong id="reportSeverity"></strong></div>
+            <div><small>Material</small><strong id="reportMaterial"></strong></div>
+            <div><small>Batch ID</small><strong id="reportBatch"></strong></div>
+          </div>
+          <div class="report-content">
+            <img id="reportImage" alt="Report defect reference">
+            <div>
+              <section>
+                <h2>Root Cause Analysis</h2>
+                <p id="reportRoot"></p>
+              </section>
+              <section>
+                <h2>Recommended Remedy</h2>
+                <p id="reportRemedy"></p>
+              </section>
+              <section>
+                <h2>Inspector Notes</h2>
+                <p id="reportNotes"></p>
+              </section>
+            </div>
+          </div>
+          <section class="report-checklist">
+            <h2>Prevention Checklist</h2>
+            <ul id="reportPrevention"></ul>
+          </section>
+        </article>
+      </section>
+
+      <section class="page" id="page-ai" data-page="ai">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Future ML feature</p>
+            <h1>AI Image Diagnosis</h1>
+            <p>This placeholder is ready for the model/API phase after the manual prototype and dataset are complete.</p>
+          </div>
+          <span class="prototype-badge">Coming Later</span>
+        </div>
+        <div class="ai-grid">
+          <div class="panel upload-panel">
+            <span class="material-symbols-outlined">cloud_upload</span>
+            <h2>Upload metal defect image</h2>
+            <p>JPG, PNG, or WEBP. Use close crop, good lighting, and minimal background.</p>
+            <input type="file" accept="image/*" disabled>
+          </div>
+          <div class="panel">
+            <div class="panel-title">
+              <span class="material-symbols-outlined">modeling</span>
+              <h2>Prediction Result</h2>
+            </div>
+            <div class="empty-state">
+              <strong>No model connected yet</strong>
+              <p>Phase 1 stays manual. Later, this panel can show defect, severity, confidence, and suggested remedy from ML.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

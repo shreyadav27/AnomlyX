@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AnomlyX - Diagnostic Report AX-9421</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white !important; }
+            .print-container { border: none !important; box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+            .page-break { page-break-before: always; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .coordinate-overlay {
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#131b2e",
+                      "on-secondary-container": "#5c2400",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#f8f9ff",
+                      "primary": "#000000",
+                      "on-secondary-fixed": "#341100",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface": "#f8f9ff",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#dae2fd",
+                      "on-tertiary-container": "#76859b",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#d5e3fd",
+                      "tertiary-fixed-dim": "#b9c7e0",
+                      "on-tertiary-fixed": "#0d1c2f",
+                      "secondary-container": "#fd761a",
+                      "on-tertiary-fixed-variant": "#3a485c",
+                      "secondary-fixed-dim": "#ffb690",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-surface": "#0b1c30",
+                      "on-primary-container": "#7c839b",
+                      "secondary-fixed": "#ffdbca",
+                      "inverse-surface": "#213145",
+                      "surface-variant": "#d3e4fe",
+                      "surface-dim": "#cbdbf5",
+                      "surface-container-highest": "#d3e4fe",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#45464d",
+                      "surface-container": "#e5eeff",
+                      "primary-container": "#131b2e",
+                      "outline": "#76777d",
+                      "inverse-primary": "#bec6e0",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-primary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#565e74",
+                      "surface-container-lowest": "#ffffff",
+                      "background": "#f8f9ff",
+                      "on-background": "#0b1c30",
+                      "tertiary": "#000000",
+                      "secondary": "#9d4300",
+                      "on-secondary-fixed-variant": "#783200",
+                      "surface-container-low": "#eff4ff",
+                      "surface-container-high": "#dce9ff",
+                      "tertiary-container": "#0d1c2f"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "gutter": "16px",
+                      "base": "4px",
+                      "sm": "8px",
+                      "xl": "40px",
+                      "xs": "4px",
+                      "md": "16px",
+                      "margin-mobile": "16px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "label-sm": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["JetBrains Mono"],
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface-container-low font-body-md text-on-surface antialiased">
+<!-- Actions Bar (No Print) -->
+<div class="no-print w-full bg-white border-b border-outline-variant py-sm px-margin-desktop sticky top-0 z-50 flex justify-between items-center shadow-sm">
+<button class="flex items-center gap-xs font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" onclick="window.history.back()">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Back to Diagnosis
+        </button>
+<div class="flex gap-md">
+<button class="flex items-center gap-sm px-lg py-sm bg-primary text-on-primary rounded font-label-md text-label-md hover:opacity-90 transition-opacity" onclick="window.print()">
+<span class="material-symbols-outlined text-[20px]">print</span>
+                Print Report
+            </button>
+<button class="flex items-center gap-sm px-lg py-sm border border-outline text-on-surface rounded font-label-md text-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                Download PDF
+            </button>
+</div>
+</div>
+<!-- Report Canvas -->
+<main class="max-w-[850px] mx-auto my-xl bg-white shadow-lg border border-outline-variant p-[50px] print-container flex flex-col gap-lg">
+<!-- Header -->
+<header class="flex justify-between items-start border-b border-outline-variant pb-lg">
+<div class="flex flex-col gap-xs">
+<div class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">AnomlyX</div>
+<div class="font-label-md text-label-md text-on-surface-variant flex gap-md">
+<span class="font-bold">REPORT ID:</span> <span class="text-on-surface">AX-9421</span>
+</div>
+</div>
+<div class="text-right flex flex-col gap-xs">
+<div class="px-md py-xs bg-error-container text-on-error-container font-label-md text-label-md rounded-full flex items-center justify-end gap-sm self-end">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                    HIGH SEVERITY RISK
+                </div>
+<div class="font-label-md text-label-md text-on-surface-variant mt-sm">
+                    Date: <span class="text-on-surface">Nov 24, 2023</span><br/>
+                    Inspector: <span class="text-on-surface">J. Miller</span><br/>
+                    Batch ID: <span class="text-on-surface">B-2023-09-XF</span>
+</div>
+</div>
+</header>
+<!-- Diagnosis Summary Table -->
+<section>
+<div class="bg-surface-container-low p-md rounded-lg">
+<h2 class="font-label-md text-label-md font-bold text-primary uppercase tracking-widest mb-md border-b border-outline-variant pb-xs">Diagnosis Summary</h2>
+<div class="grid grid-cols-5 gap-gutter">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Defect Type</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Porosity</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-gutter">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Severity</span>
+<span class="font-headline-md text-headline-md font-bold text-error">High</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-gutter">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Material</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Steel</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-gutter">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Mode</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Manual</span>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-gutter">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Status</span>
+<span class="font-headline-md text-headline-md font-bold text-on-secondary-container">Verified</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Imaging Area -->
+<section class="grid grid-cols-12 gap-lg">
+<div class="col-span-8">
+<div class="relative rounded-lg overflow-hidden border-4 border-outline bg-primary-container aspect-[4/3] group">
+<img class="w-full h-full object-cover mix-blend-screen opacity-90" data-alt="A high-contrast industrial X-ray scan showing the cross-section of a steel industrial component with visible internal gas pockets or porosity defects. The image is rendered in cold greyscale tones, highlighting the structural irregularities against a dense metal background. Superimposed over the image is a minimalist digital green wireframe grid indicating specific coordinates and a highlighted red circle marking the primary defect area. The aesthetic is scientific, precise, and clinical, typical of non-destructive testing environments." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4M5nUbEVzBjZad_KxSre31wjhFjmgJVnz5ZuXSOsuDBqrTxH1QcFyzvHz8d3TW5BKFcciZPxhbPTKJj9lFv-RoyyCnAJ_JdjvQlof8XTfCqxPRSZb9OvS6JZn2W_bJoWz_874kwhuD1kjvoEJ6L3YaYwBkn9gsXtrBrWlZbeMi_9ayWFIcgretxlYT8JutABCo93VVIQm8v1lnYuhQxWqmAolJYH_W_5XI0Fb2yi3v5mvqB2jmerPRmdvupbbMZqPygWWa4fSJA"/>
+<!-- Coordinate Overlays -->
+<div class="absolute top-sm left-sm font-label-sm text-label-sm text-white coordinate-overlay">X: 142.09</div>
+<div class="absolute top-sm right-sm font-label-sm text-label-sm text-white coordinate-overlay">Y: 89.22</div>
+<div class="absolute bottom-sm left-sm font-label-sm text-label-sm text-white coordinate-overlay">SEC: LINE-04</div>
+<div class="absolute bottom-sm right-sm font-label-sm text-label-sm text-white coordinate-overlay opacity-50">#AX-9421-RAW</div>
+<!-- AI Highlight -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-dashed border-error rounded-full animate-pulse flex items-center justify-center">
+<span class="bg-error text-white font-label-sm text-[8px] px-1 absolute -top-2">DEFECT_IDENTIFIED</span>
+</div>
+</div>
+</div>
+<div class="col-span-4 flex flex-col gap-md">
+<div class="border border-outline-variant p-md rounded flex flex-col gap-sm">
+<h3 class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">Histogram Data</h3>
+<div class="h-24 w-full bg-surface-container flex items-end gap-[2px] p-xs">
+<div class="bg-outline w-full h-[40%]"></div>
+<div class="bg-outline w-full h-[60%]"></div>
+<div class="bg-error w-full h-[95%]"></div>
+<div class="bg-outline w-full h-[70%]"></div>
+<div class="bg-outline w-full h-[50%]"></div>
+<div class="bg-outline w-full h-[30%]"></div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant italic">Spectral analysis confirms high density gas entrapment.</p>
+</div>
+<div class="border border-outline-variant p-md rounded bg-surface-bright">
+<h3 class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider mb-sm">Scan Parameters</h3>
+<ul class="font-label-sm text-label-sm text-on-surface flex flex-col gap-xs">
+<li class="flex justify-between"><span>Voltage:</span> <span>160kV</span></li>
+<li class="flex justify-between"><span>Exposure:</span> <span>2.4mA</span></li>
+<li class="flex justify-between"><span>Filter:</span> <span>Al 2.0mm</span></li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Root Cause & Remedy -->
+<section class="grid grid-cols-2 gap-xl">
+<div class="flex flex-col gap-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<h2 class="font-headline-md text-headline-md font-bold">Root Cause Analysis</h2>
+</div>
+<div class="border-l-2 border-primary pl-md">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Subsurface porosity identified in the weld junction. Likely caused by insufficient shielding gas coverage during the automated welding cycle. Moisture detected on the substrate surface prior to thermal application exacerbated the gas entrapment.
+                    </p>
+</div>
+</div>
+<div class="flex flex-col gap-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">build</span>
+<h2 class="font-headline-md text-headline-md font-bold">Recommended Remedy</h2>
+</div>
+<div class="border-l-2 border-secondary pl-md">
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Immediate removal of the defective section via carbon-arc gouging. Re-weld using increased argon flow rate (15-20 CFH). Preheat substrate to 150°C to eliminate surface moisture before re-application.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Prevention Checklist -->
+<section class="bg-surface-container rounded-lg p-lg">
+<h2 class="font-label-md text-label-md font-bold text-primary uppercase tracking-widest mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined">rule</span>
+                Prevention Checklist
+            </h2>
+<div class="grid grid-cols-2 gap-lg">
+<div class="flex items-start gap-md">
+<div class="mt-1 border-2 border-primary w-4 h-4 rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Calibrate Gas Flow Meters</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Daily verification of regulator accuracy.</span>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<div class="mt-1 border-2 border-outline w-4 h-4 rounded-sm"></div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Pre-Heat Inspection</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Verify temperature reaches 150°C.</span>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<div class="mt-1 border-2 border-primary w-4 h-4 rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Shielding Nozzle Cleanliness</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Remove spatter build-up every 2 hours.</span>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<div class="mt-1 border-2 border-outline w-4 h-4 rounded-sm"></div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Batch Traceability Audit</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Cross-reference material certifications.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer / Signature -->
+<footer class="mt-xl pt-lg border-t border-outline-variant flex justify-between items-end">
+<div class="flex flex-col gap-sm">
+<div class="w-48 border-b border-primary h-12 flex items-end">
+<span class="font-label-md text-label-md italic text-on-surface-variant opacity-40 select-none">Miller_Sig_Secure</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Inspector Signature / J. Miller</span>
+</div>
+<div class="flex flex-col text-right gap-xs">
+<div class="font-label-sm text-label-sm text-on-surface-variant">Generated by AnomlyX AI Diagnostic Suite v2.4.1</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Confidential Industrial Report • All Rights Reserved</div>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction for print button feedback
+        document.querySelector('button[onclick="window.print()"]').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // Simulating some dynamic coordinate updates for "Atmosphere"
+        const coordinates = document.querySelectorAll('.coordinate-overlay');
+        setInterval(() => {
+            coordinates.forEach(el => {
+                if(Math.random() > 0.95) {
+                    el.style.opacity = '0.3';
+                    setTimeout(() => el.style.opacity = '1', 100);
+                }
+            });
+        }, 3000);
+    </script>
+</body></html>

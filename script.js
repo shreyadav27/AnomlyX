@@ -1,0 +1,377 @@
+const defectData = {
+  porosity: {
+    name: "Porosity",
+    category: "Casting / Welding",
+    description: "Small gas pockets or cavities trapped inside or on the surface of the metal.",
+    images: {
+      low: "https://images.unsplash.com/photo-1588275979538-1da155af77dd?auto=format&fit=crop&w=900&q=80",
+      medium: "https://images.unsplash.com/photo-1573497491765-dccce02b29df?auto=format&fit=crop&w=900&q=80",
+      high: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=900&q=80"
+    },
+    severity: {
+      low: {
+        visual: "Sparse pinholes or isolated round pores. Surface continuity is mostly maintained.",
+        root: "Minor moisture, surface contamination, or slight shielding gas disturbance during solidification.",
+        remedy: "Clean the surface, verify shielding gas flow, and maintain stable humidity before the next run.",
+        prevention: ["Dry workpiece before heating", "Check gas hose leaks", "Clean oil and dust from surface"]
+      },
+      medium: {
+        visual: "Clustered pores in one region with visible surface disruption and local weakness.",
+        root: "Inadequate venting, excess moisture in mold, or inconsistent gas coverage during welding.",
+        remedy: "Improve venting, increase preheat control, inspect gas flow, and rework affected area if load-bearing.",
+        prevention: ["Inspect mold vents", "Preheat substrate", "Maintain gas flow log", "Use clean filler material"]
+      },
+      high: {
+        visual: "Large cavities, honeycomb texture, or widespread pores that reduce structural reliability.",
+        root: "Severe gas entrapment, contaminated melt, blocked venting, or incorrect process parameters.",
+        remedy: "Reject or cut out the component section, perform alloy/gas audit, and recalibrate the production line.",
+        prevention: ["Stop line for root-cause audit", "Test alloy purity", "Clean venting channels", "Verify process temperature"]
+      }
+    }
+  },
+  crack: {
+    name: "Crack",
+    category: "Structural",
+    description: "Linear fracture or separation caused by stress, cooling rate, fatigue, or poor fusion.",
+    images: {
+      low: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=900&q=80",
+      medium: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80",
+      high: "https://images.unsplash.com/photo-1516937941344-00b4e0337589?auto=format&fit=crop&w=900&q=80"
+    },
+    severity: {
+      low: {
+        visual: "Fine surface hairline crack with short length and no branching.",
+        root: "Minor residual stress or small thermal shock during cooling.",
+        remedy: "Blend and inspect the area, then monitor with dye penetrant or visual inspection.",
+        prevention: ["Control cooling rate", "Avoid sharp corners", "Use post-weld inspection"]
+      },
+      medium: {
+        visual: "Longer visible crack, slight branching, or crack near a stress concentration point.",
+        root: "Thermal fatigue, incorrect weld parameters, or high residual stress.",
+        remedy: "Stop use of the part, grind out the crack, re-weld if allowed, and perform NDT verification.",
+        prevention: ["Apply preheat", "Use correct welding speed", "Reduce residual stress"]
+      },
+      high: {
+        visual: "Deep crack, branching fracture, or crack crossing a load-bearing section.",
+        root: "Critical fatigue failure, brittle fracture, or severe process mismatch.",
+        remedy: "Reject the component immediately and perform full failure analysis before production continues.",
+        prevention: ["Audit material grade", "Review load conditions", "Perform ultrasonic testing", "Revise heat treatment"]
+      }
+    }
+  },
+  slag: {
+    name: "Slag Inclusion",
+    category: "Welding",
+    description: "Non-metallic trapped material inside the weld bead or casting.",
+    images: {
+      low: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
+      medium: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=900&q=80",
+      high: "https://images.unsplash.com/photo-1590959651373-a3db0f38a961?auto=format&fit=crop&w=900&q=80"
+    },
+    severity: {
+      low: {
+        visual: "Small isolated dark inclusion with minimal impact on surrounding weld profile.",
+        root: "Light slag residue remained between passes.",
+        remedy: "Clean the weld area and use controlled pass technique for the next layer.",
+        prevention: ["Brush between passes", "Keep electrode angle stable", "Avoid low travel speed"]
+      },
+      medium: {
+        visual: "Multiple elongated inclusions visible along the weld path.",
+        root: "Poor inter-pass cleaning, incorrect current, or trapped flux due to bead geometry.",
+        remedy: "Remove affected section, clean thoroughly, adjust current, and re-weld with proper technique.",
+        prevention: ["Clean every pass", "Adjust amperage", "Maintain correct bead angle"]
+      },
+      high: {
+        visual: "Continuous slag line or heavy inclusion that interrupts weld continuity.",
+        root: "Severe process control failure or repeated inadequate cleaning between weld passes.",
+        remedy: "Reject weld, gouge out defective area, and repeat welding under supervised parameters.",
+        prevention: ["Review welding procedure", "Train operator", "Inspect each pass", "Use correct electrode"]
+      }
+    }
+  },
+  undercut: {
+    name: "Undercut",
+    category: "Welding",
+    description: "Groove melted into base metal along the weld toe and not filled by weld metal.",
+    images: {
+      low: "https://images.unsplash.com/photo-1560461396-ec0ef7bb29dd?auto=format&fit=crop&w=900&q=80",
+      medium: "https://images.unsplash.com/photo-1576354346340-8af2e9a5e619?auto=format&fit=crop&w=900&q=80",
+      high: "https://images.unsplash.com/photo-1589634749000-1f72f1d48f17?auto=format&fit=crop&w=900&q=80"
+    },
+    severity: {
+      low: {
+        visual: "Shallow groove along weld edge with smooth transition.",
+        root: "Slightly high travel speed or minor electrode angle error.",
+        remedy: "Smooth and inspect the groove, then adjust travel speed.",
+        prevention: ["Maintain correct angle", "Reduce travel speed", "Use consistent arc length"]
+      },
+      medium: {
+        visual: "Noticeable groove along the weld toe that can concentrate stress.",
+        root: "Excess current, fast travel, or poor electrode manipulation.",
+        remedy: "Fill the groove with repair weld and inspect for toe blending.",
+        prevention: ["Reduce current", "Control weave width", "Check weld toe profile"]
+      },
+      high: {
+        visual: "Deep continuous groove causing section loss near the weld.",
+        root: "Severe overheating, excessive current, or poor operator control.",
+        remedy: "Repair weld under controlled settings and perform NDT before accepting the part.",
+        prevention: ["Requalify weld settings", "Supervise repair pass", "Use proper filler rate"]
+      }
+    }
+  }
+};
+
+const state = {
+  defectKey: "porosity",
+  severity: "medium",
+  reportId: "AX-0001"
+};
+
+const elements = {
+  defectSelect: document.getElementById("defectSelect"),
+  severityGroup: document.getElementById("severityGroup"),
+  severityThumbs: document.getElementById("severityThumbs"),
+  resultImage: document.getElementById("resultImage"),
+  resultTitle: document.getElementById("resultTitle"),
+  severityBadge: document.getElementById("severityBadge"),
+  visualSigns: document.getElementById("visualSigns"),
+  rootCause: document.getElementById("rootCause"),
+  remedy: document.getElementById("remedy"),
+  preventionList: document.getElementById("preventionList"),
+  inspectorInput: document.getElementById("inspectorInput"),
+  batchInput: document.getElementById("batchInput"),
+  materialInput: document.getElementById("materialInput"),
+  locationInput: document.getElementById("locationInput"),
+  notesInput: document.getElementById("notesInput"),
+  libraryGrid: document.getElementById("libraryGrid"),
+  librarySearch: document.getElementById("librarySearch"),
+  toast: document.getElementById("toast")
+};
+
+function titleCase(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function getCurrentFinding() {
+  const defect = defectData[state.defectKey];
+  return {
+    defect,
+    finding: defect.severity[state.severity],
+    image: defect.images[state.severity]
+  };
+}
+
+function populateDefectSelect() {
+  elements.defectSelect.innerHTML = Object.entries(defectData)
+    .map(([key, defect]) => `<option value="${key}">${defect.name}</option>`)
+    .join("");
+  elements.defectSelect.value = state.defectKey;
+}
+
+function renderSeverityThumbs() {
+  const defect = defectData[state.defectKey];
+  elements.severityThumbs.innerHTML = ["low", "medium", "high"]
+    .map((level) => `
+      <button class="severity-thumb ${level === state.severity ? "active" : ""}" type="button" data-thumb="${level}">
+        <img src="${defect.images[level]}" alt="${defect.name} ${level} severity reference">
+        <span>${level}</span>
+      </button>
+    `)
+    .join("");
+}
+
+function renderDiagnosis() {
+  const { defect, finding, image } = getCurrentFinding();
+  elements.resultImage.src = image;
+  elements.resultTitle.textContent = defect.name;
+  elements.severityBadge.textContent = titleCase(state.severity);
+  elements.severityBadge.className = `severity-pill ${state.severity}`;
+  elements.visualSigns.textContent = finding.visual;
+  elements.rootCause.textContent = finding.root;
+  elements.remedy.textContent = finding.remedy;
+  elements.preventionList.innerHTML = finding.prevention.map((item) => `<li>${item}</li>`).join("");
+
+  document.querySelectorAll("[data-severity]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.severity === state.severity);
+  });
+
+  renderSeverityThumbs();
+  renderReport();
+}
+
+function renderLibrary(filter = "") {
+  const normalizedFilter = filter.trim().toLowerCase();
+  elements.libraryGrid.innerHTML = Object.entries(defectData)
+    .filter(([, defect]) => {
+      return `${defect.name} ${defect.category} ${defect.description}`.toLowerCase().includes(normalizedFilter);
+    })
+    .map(([key, defect]) => `
+      <article class="defect-card">
+        <img src="${defect.images.medium}" alt="${defect.name} medium severity reference">
+        <div class="defect-card-body">
+          <h2>${defect.name}</h2>
+          <p>${defect.description}</p>
+          <div class="mini-severity">
+            <span class="low">Low</span>
+            <span class="medium">Medium</span>
+            <span class="high">High</span>
+          </div>
+          <button class="ghost-action" data-use-defect="${key}">
+            <span class="material-symbols-outlined">biotech</span>
+            Use in Diagnosis
+          </button>
+        </div>
+      </article>
+    `)
+    .join("");
+}
+
+function renderReport() {
+  const { defect, finding, image } = getCurrentFinding();
+  const date = new Date();
+  document.getElementById("reportId").textContent = state.reportId;
+  document.getElementById("reportDate").textContent = date.toLocaleDateString();
+  document.getElementById("reportInspector").textContent = elements.inspectorInput.value || "Inspector not set";
+  document.getElementById("reportDefect").textContent = defect.name;
+  document.getElementById("reportSeverity").textContent = titleCase(state.severity);
+  document.getElementById("reportMaterial").textContent = elements.materialInput.value || "Not specified";
+  document.getElementById("reportBatch").textContent = elements.batchInput.value || "Not specified";
+  document.getElementById("reportImage").src = image;
+  document.getElementById("reportRoot").textContent = finding.root;
+  document.getElementById("reportRemedy").textContent = finding.remedy;
+  document.getElementById("reportNotes").textContent = elements.notesInput.value || "No additional notes recorded.";
+  document.getElementById("reportPrevention").innerHTML = finding.prevention.map((item) => `<li>${item}</li>`).join("");
+}
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach((section) => {
+    section.classList.toggle("active", section.dataset.page === page);
+  });
+  document.querySelectorAll("[data-route]").forEach((link) => {
+    link.classList.toggle("active", link.dataset.route === page);
+  });
+  document.querySelectorAll(".side-link").forEach((button) => {
+    button.classList.toggle("active", button.dataset.jump === page);
+  });
+  window.location.hash = page;
+}
+
+function showToast(message) {
+  elements.toast.textContent = message;
+  elements.toast.classList.add("show");
+  window.clearTimeout(showToast.timeout);
+  showToast.timeout = window.setTimeout(() => {
+    elements.toast.classList.remove("show");
+  }, 2200);
+}
+
+function saveResult() {
+  const { defect } = getCurrentFinding();
+  const saved = {
+    id: state.reportId,
+    defect: defect.name,
+    severity: state.severity,
+    inspector: elements.inspectorInput.value,
+    batch: elements.batchInput.value,
+    material: elements.materialInput.value,
+    location: elements.locationInput.value,
+    notes: elements.notesInput.value,
+    createdAt: new Date().toISOString()
+  };
+  localStorage.setItem("anomlyx-last-report", JSON.stringify(saved));
+  showToast("Result saved in browser storage.");
+}
+
+function bindEvents() {
+  elements.defectSelect.addEventListener("change", (event) => {
+    state.defectKey = event.target.value;
+    renderDiagnosis();
+  });
+
+  elements.severityGroup.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-severity]");
+    if (!button) return;
+    state.severity = button.dataset.severity;
+    renderDiagnosis();
+  });
+
+  elements.severityThumbs.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-thumb]");
+    if (!button) return;
+    state.severity = button.dataset.thumb;
+    renderDiagnosis();
+  });
+
+  document.getElementById("updateBtn").addEventListener("click", () => {
+    renderReport();
+    showToast("Diagnosis updated.");
+  });
+
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    renderDiagnosis();
+    showToast("Diagnosis generated.");
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    window.setTimeout(() => {
+      state.defectKey = "porosity";
+      state.severity = "medium";
+      elements.defectSelect.value = state.defectKey;
+      renderDiagnosis();
+    }, 0);
+  });
+
+  document.getElementById("printBtn").addEventListener("click", () => {
+    renderReport();
+    showPage("report");
+    window.setTimeout(() => window.print(), 120);
+  });
+
+  document.getElementById("reportPrintBtn").addEventListener("click", () => {
+    renderReport();
+    window.print();
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", saveResult);
+
+  ["inspectorInput", "batchInput", "materialInput", "locationInput", "notesInput"].forEach((key) => {
+    elements[key].addEventListener("input", renderReport);
+  });
+
+  document.addEventListener("click", (event) => {
+    const jump = event.target.closest("[data-jump]");
+    if (jump) {
+      showPage(jump.dataset.jump);
+      return;
+    }
+
+    const useDefect = event.target.closest("[data-use-defect]");
+    if (useDefect) {
+      state.defectKey = useDefect.dataset.useDefect;
+      elements.defectSelect.value = state.defectKey;
+      renderDiagnosis();
+      showPage("diagnose");
+      showToast(`${defectData[state.defectKey].name} loaded into diagnosis.`);
+    }
+  });
+
+  elements.librarySearch.addEventListener("input", (event) => {
+    renderLibrary(event.target.value);
+  });
+
+  window.addEventListener("hashchange", () => {
+    const page = window.location.hash.replace("#", "") || "diagnose";
+    showPage(page);
+  });
+}
+
+function init() {
+  state.reportId = `AX-${Math.floor(1000 + Math.random() * 9000)}`;
+  populateDefectSelect();
+  renderLibrary();
+  renderDiagnosis();
+  bindEvents();
+  showPage(window.location.hash.replace("#", "") || "diagnose");
+}
+
+init();
