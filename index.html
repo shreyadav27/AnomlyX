@@ -19,9 +19,8 @@
       <a href="#diagnose" data-route="diagnose">Diagnose</a>
       <a href="#library" data-route="library">Defect Library</a>
       <a href="#report" data-route="report">Report</a>
-      <!-- <a href="#ai" data-route="ai">AI Upload</a> -->
     </nav>
-    <span class="prototype-badge">Manual Prototype</span>
+    <span class="prototype-badge">API Connected</span>
   </header>
 
   <main class="app-shell">
@@ -35,7 +34,7 @@
       </section>
       <button class="side-link active" data-jump="diagnose">
         <span class="material-symbols-outlined">biotech</span>
-        Manual Diagnosis
+        Diagnosis
       </button>
       <button class="side-link" data-jump="library">
         <span class="material-symbols-outlined">inventory_2</span>
@@ -45,10 +44,6 @@
         <span class="material-symbols-outlined">print</span>
         Report
       </button>
-      <!-- <button class="side-link" data-jump="ai">
-        <span class="material-symbols-outlined">upload_file</span>
-        Future AI
-      </button> -->
     </aside>
 
     <section class="content">
@@ -56,8 +51,8 @@
         <div class="page-header">
           <div>
             <p class="eyebrow">Inspection workspace</p>
-            <h1>Manual Defect Diagnosis</h1>
-            <p>Select a defect and severity to generate root cause, remedy, and print-ready report details.</p>
+            <h1>Defect Diagnosis</h1>
+            <p>Upload an inspection image for API prediction, or select a defect and severity manually.</p>
           </div>
           <button class="primary-action" id="generateBtn">
             <span class="material-symbols-outlined">manage_search</span>
@@ -70,6 +65,18 @@
             <div class="panel-title">
               <span class="material-symbols-outlined">tune</span>
               <h2>Inspection Input</h2>
+            </div>
+
+            <label class="upload-box" for="imageInput">
+              <span class="material-symbols-outlined">upload_file</span>
+              <strong id="uploadLabel">Upload inspection image</strong>
+              <small>JPG, PNG, or WEBP. The backend predicts the defect and severity.</small>
+              <input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp">
+            </label>
+
+            <div class="api-status" id="apiStatus">
+              <span class="material-symbols-outlined">cloud_sync</span>
+              <span>Backend ready for image prediction.</span>
             </div>
 
             <label>
@@ -127,7 +134,7 @@
           <article class="panel result-panel">
             <div class="result-visual">
               <img id="resultImage" alt="Selected defect reference">
-              <span class="scan-label">Manual reference</span>
+              <span class="scan-label" id="resultSourceLabel">Reference</span>
               <span class="coordinate">X: 124.0 | Y: 88.2</span>
             </div>
 
@@ -253,35 +260,6 @@
             <ul id="reportPrevention"></ul>
           </section>
         </article>
-      </section>
-
-      <section class="page" id="page-ai" data-page="ai">
-        <div class="page-header">
-          <div>
-            <p class="eyebrow">Future ML feature</p>
-            <h1>AI Image Diagnosis</h1>
-            <p>This placeholder is ready for the model/API phase after the manual prototype and dataset are complete.</p>
-          </div>
-          <span class="prototype-badge">Coming Later</span>
-        </div>
-        <div class="ai-grid">
-          <div class="panel upload-panel">
-            <span class="material-symbols-outlined">cloud_upload</span>
-            <h2>Upload metal defect image</h2>
-            <p>JPG, PNG, or WEBP. Use close crop, good lighting, and minimal background.</p>
-            <input type="file" accept="image/*" disabled>
-          </div>
-          <div class="panel">
-            <div class="panel-title">
-              <span class="material-symbols-outlined">modeling</span>
-              <h2>Prediction Result</h2>
-            </div>
-            <div class="empty-state">
-              <strong>No model connected yet</strong>
-              <p>Phase 1 stays manual. Later, this panel can show defect, severity, confidence, and suggested remedy from ML.</p>
-            </div>
-          </div>
-        </div>
       </section>
     </section>
   </main>

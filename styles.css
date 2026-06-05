@@ -327,6 +327,90 @@ textarea:focus {
   box-shadow: 0 1px 8px rgba(11, 28, 48, 0.08);
 }
 
+.upload-box {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+  min-height: 132px;
+  padding: 18px;
+  border: 1px dashed var(--accent-strong);
+  border-radius: var(--radius);
+  background: #fff7ed;
+  color: var(--text);
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload-box .material-symbols-outlined {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: white;
+  color: var(--accent);
+}
+
+.upload-box strong {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-box small {
+  max-width: 360px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.upload-box input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.api-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-low);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.api-status[data-status="loading"] {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.api-status[data-status="success"] {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: var(--green);
+}
+
+.api-status[data-status="warning"] {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: var(--amber);
+}
+
+.api-status[data-status="error"] {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: var(--red);
+}
+
 .thumb-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -743,41 +827,6 @@ textarea:focus {
   line-height: 1.7;
 }
 
-.ai-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
-  gap: 24px;
-}
-
-.upload-panel {
-  display: grid;
-  min-height: 360px;
-  place-items: center;
-  align-content: center;
-  gap: 10px;
-  border-style: dashed;
-  text-align: center;
-}
-
-.upload-panel .material-symbols-outlined {
-  font-size: 52px;
-  color: var(--accent);
-}
-
-.upload-panel h2,
-.upload-panel p {
-  margin: 0;
-}
-
-.upload-panel p,
-.empty-state p {
-  color: var(--muted);
-}
-
-.empty-state {
-  padding: 22px;
-}
-
 .toast {
   position: fixed;
   right: 24px;
@@ -804,7 +853,6 @@ textarea:focus {
   .app-shell,
   .diagnosis-grid,
   .result-panel,
-  .ai-grid,
   .report-content {
     grid-template-columns: 1fr;
   }

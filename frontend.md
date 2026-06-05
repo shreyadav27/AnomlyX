@@ -6,7 +6,7 @@ Global UI Style
 
 Create a responsive web application called AnomlyX for industrial metal defect diagnostics. Use a clean engineering-dashboard style with a light background, dark text, subtle borders, and strong visual hierarchy. Use colors carefully: neutral white/gray base, deep charcoal text, steel blue accents, warning amber for medium severity, red for high severity, and green for safe/low status. The interface should feel professional for factory quality control, welding inspection, and engineering students.
 
-Use a top navigation bar with the AnomlyX name on the left and simple navigation links: Dashboard, Diagnose, Defect Library, Reports. Use compact cards only for repeated content or tool panels. Use icons for actions like upload, print, download, search, and warning status. Make the layout fully responsive for desktop and mobile. Buttons should be clear and practical. Avoid decorative hero sections, gradients, and unnecessary animations.
+Use a top navigation bar with the AnomlyX name on the left and simple navigation links: Dashboard, Diagnose, Defect Library, Reports. Use compact cards only for repeated content or tool panels. Use icons for actions like print, download, search, and warning status. Make the layout fully responsive for desktop and mobile. Buttons should be clear and practical. Avoid decorative hero sections, gradients, and unnecessary animations.
 
 Page 1: Dashboard / Home
 
@@ -63,18 +63,7 @@ Include a large image area showing the selected defect reference image. Next to 
 
 At the top-right of the screen version, include action buttons for Print, Download PDF, and Back to Diagnosis. For print layout, hide navigation and buttons. The page should be highly readable in black and white but still use subtle color badges on screen.
 
-Page 6: Future AI Upload Page
-
-Prompt:
-Design a future AI Upload Diagnosis page for AnomlyX. This page will be used later when the machine-learning model is added. It should still match the current app style.
-
-Create a main upload workspace. At the top, show the title AI Image Diagnosis and a small badge that says Future ML Feature. In the center, create a drag-and-drop upload area with an upload icon, text that says Upload metal defect image, and accepted formats JPG, PNG, WEBP. Include a preview area that shows the uploaded image.
-
-On the right side, create a Prediction Result panel. Show placeholder states for Defect Type, Severity, Confidence Score, and Suggested Remedy. Include a progress state for Analyzing Image and an empty state before upload. Add a button labeled Run Analysis and another labeled Use Manual Diagnosis.
-
-Below the upload area, include image quality guidelines using compact checklist rows: good lighting, close crop of metal surface, avoid blurry image, remove unnecessary background. The design should clearly communicate that AI is coming later while still feeling part of the product.
-
-Page 7: Settings / Data Management page
+Page 6: Settings / Data Management page
 Prompt:
 Design a Settings and Data Management page for AnomlyX. This page should help the project owner manage defect data in the frontend prototype.
 
@@ -91,7 +80,6 @@ Recommended Page Order for Building
 3. Defect Detail Page
 4. Report / Printable Result Page
 5. Dashboard / Home
-6. Future AI Upload Page
-7. Settings / Data Management Page
+6. Settings / Data Management Page
 
 Start with the Manual Diagnosis page because it proves the main product logic first. The other pages can grow around it.

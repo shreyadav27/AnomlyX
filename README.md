@@ -1,11 +1,12 @@
 # AnomlyX
 
-AnomlyX is a frontend prototype for industrial metal defect diagnosis. It helps an inspector manually select a defect type and severity level, then generates visual signs, likely root causes, engineering remedies, prevention checks, and a printable inspection report.
+AnomlyX is a frontend prototype for industrial metal defect diagnosis. It helps an inspector upload an inspection image for backend prediction or manually select a defect type and severity level, then generates visual signs, likely root causes, engineering remedies, prevention checks, and a printable inspection report.
 
-The project is currently built as a static web app using HTML, CSS, and JavaScript. It is intended as a manual diagnostic workflow first, with a future path toward image upload and machine-learning based prediction.
+The project has a static frontend built with HTML, CSS, and JavaScript plus a FastAPI backend for image prediction. Until a trained model is connected, the backend returns a filename-based placeholder prediction so the frontend/backend workflow can be tested end to end.
 
 ## Features
 
+- Image upload wired to the FastAPI `POST /predict` endpoint.
 - Manual defect diagnosis by defect type and severity.
 - Severity levels for `Low`, `Medium`, and `High`.
 - Defect reference image thumbnails for severity comparison.
@@ -13,7 +14,7 @@ The project is currently built as a static web app using HTML, CSS, and JavaScri
 - Defect library with search and quick-load actions.
 - Printable diagnostic report page.
 - Browser-based save action using `localStorage`.
-- Placeholder screen for a future AI image diagnosis workflow.
+- ML API with health, dataset class discovery, and image prediction endpoints.
 
 ## Supported Defect List
 
@@ -38,6 +39,8 @@ AnomlyX/
 ├── styles.css          # Application styling and responsive layout
 ├── script.js           # Defect data, UI rendering, navigation, reports
 ├── assets/defects/     # Normalized defect reference images
+├── backend/            # FastAPI backend for future ML prediction
+├── Defect_Dataset/     # Training dataset folders grouped by defect/severity
 ├── frontend.md         # UI prompt/design notes
 ├── plan.md             # Development roadmap notes
 └── README.md
@@ -45,26 +48,61 @@ AnomlyX/
 
 ## How to Run
 
-Because this is a static prototype, no build step is required.
+Because this is a static prototype, no build step is required. Start the backend first if you want image prediction.
 
-1. Open `index.html` directly in a browser.
-2. Or serve the folder locally:
+1. Start the backend:
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+2. Serve the frontend from the project root:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit:
+3. Visit:
 
 ```text
 http://localhost:8000
 ```
 
+You can also open `index.html` directly in a browser for manual diagnosis. The backend allows local static origins and direct-file development.
+
+## Backend API
+
+Install Python 3.11 or newer, then run:
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+Open the API docs:
+
+```text
+http://127.0.0.1:8001/docs
+```
+
+Available endpoints:
+
+- `GET /health` checks API, dataset, and model configuration.
+- `GET /classes` reads defect folders from `Defect_Dataset`.
+- `POST /predict` accepts a JPG, PNG, or WEBP image.
+
 ## Basic Usage
 
 1. Go to the `Diagnose` page.
-2. Select a defect type.
-3. Choose `Low`, `Medium`, or `High` severity.
+2. Upload an inspection image to call the backend prediction API.
+3. Or select a defect type and choose `Low`, `Medium`, or `High` severity manually.
 4. Add optional inspector, batch, material, location, and notes.
 5. Click `Generate Diagnosis` or `Update Result`.
 6. Use `Print Report` to open the report page and print/export from the browser.
@@ -73,7 +111,7 @@ http://localhost:8000
 ## Known Defects and Limitations
 
 - The extra `manual-porosity-enhanced.png` asset is not currently used by the app workflow.
-- The AI upload page is only a placeholder. No model, backend API, or image prediction flow is connected yet.
+- The backend prediction endpoint currently uses a filename-based placeholder until real inference code is connected.
 - The app uses static frontend data. Defects, remedies, and image paths are hard-coded in `script.js`.
 - Saved results only store the latest report in browser `localStorage`; there is no report history database.
 - Print/export currently relies on the browser print dialog instead of a dedicated PDF export library.
@@ -85,8 +123,8 @@ http://localhost:8000
 - Keep new image assets named with the same pattern: `assets/defects/<severity>-<defect>.png`.
 - Add more defect categories such as blowhole, undercut, lack of fusion, pitting corrosion, cold shut, and surface roughness.
 - Add report history, exportable PDFs, and persistent inspection records.
-- Add image upload and ML inference using a trained computer-vision model.
-- Add dataset folders for training images grouped by defect and severity.
+- Replace the backend placeholder predictor with TensorFlow, PyTorch, ONNX, or Teachable Machine inference.
+- Add image upload and frontend ML integration using the backend prediction endpoint.
 - Validate root causes and remedies against welding/casting inspection standards.
 
 ## Tech Stack
@@ -94,8 +132,10 @@ http://localhost:8000
 - HTML5
 - CSS3
 - Vanilla JavaScript
+- Python
+- FastAPI
 - Google Fonts and Material Symbols
 
 ## Status
 
-AnomlyX is in the manual prototype phase. The current focus is validating the diagnostic workflow, defect knowledge base, and report layout before adding a machine-learning backend.
+AnomlyX is in the manual prototype plus backend scaffold phase. The current focus is collecting enough labeled images, then replacing the placeholder predictor with a trained model.

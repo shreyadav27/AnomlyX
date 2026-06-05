@@ -1,3 +1,10 @@
+const defectAssetPath = "assets/defects/";
+const apiBaseUrl = window.ANOMLYX_API_BASE_URL || "http://127.0.0.1:8001";
+
+function getDefectImage(fileName) {
+  return `${defectAssetPath}${fileName}`;
+}
+
 function createReferenceImage(defectName, severity, accentColor) {
   const severityMap = {
     low: { count: 3, label: "LOW", opacity: 0.32 },
@@ -92,9 +99,9 @@ const defectData = {
     category: "Casting / Welding",
     description: "Small gas pockets or cavities trapped inside or on the surface of the metal.",
     images: {
-      low: "low porous.jpg",
-      medium: "medium porous.jpg",
-      high: "high porous.jpg"
+      low: getDefectImage("low-porosity.png"),
+      medium: getDefectImage("medium-porosity.png"),
+      high: getDefectImage("high-porosity.png")
     },
     severity: {
       low: {
@@ -122,9 +129,9 @@ const defectData = {
     category: "Structural",
     description: "Linear fracture or separation caused by stress, cooling rate, fatigue, or poor fusion.",
     images: {
-      low: "low crack img.jpg",
-      medium: "medium crack img.webp",
-      high: "high crack img.jpg"
+      low: getDefectImage("low-crack.png"),
+      medium: getDefectImage("medium-crack.png"),
+      high: getDefectImage("high-crack.png")
     },
     severity: {
       low: {
@@ -152,9 +159,9 @@ const defectData = {
     category: "Welding",
     description: "Non-metallic trapped material inside the weld bead or casting.",
     images: {
-      low: "stitch_anomlyx_diagnostic_dashboard/stitch_anomlyx_diagnostic_dashboard/low slug.jpg",
-      medium: "stitch_anomlyx_diagnostic_dashboard/stitch_anomlyx_diagnostic_dashboard/med slug.webp",
-      high: "stitch_anomlyx_diagnostic_dashboard/stitch_anomlyx_diagnostic_dashboard/high slug.png"
+      low: getDefectImage("low-slag-inclusion.png"),
+      medium: getDefectImage("medium-slag-inclusion.png"),
+      high: getDefectImage("high-slag-inclusion.png")
     },
     severity: {
       low: {
@@ -182,9 +189,9 @@ const defectData = {
     category: "Casting",
     description: "Incomplete casting where molten metal fails to fill the mold cavity completely.",
     images: {
-      low: "misrun low.jpg",
-      medium: "misrun medium.webp",
-      high: "misrun high.jpg"
+      low: getDefectImage("low-misrun.png"),
+      medium: getDefectImage("medium-misrun.png"),
+      high: getDefectImage("high-misrun.png")
     },
     severity: {
       low: {
@@ -212,9 +219,9 @@ const defectData = {
     category: "Service / Surface",
     description: "Chemical or electrochemical metal degradation that creates rust, pitting, or section loss.",
     images: {
-      low: "low corr.jpg",
-      medium: "med corr.jpg",
-      high: "high corr.jpg"
+      low: getDefectImage("low-corrosion.png"),
+      medium: getDefectImage("medium-corrosion.png"),
+      high: getDefectImage("high-corrosion.png")
     },
     severity: {
       low: {
@@ -242,9 +249,9 @@ const defectData = {
     category: "Casting",
     description: "Void or depression caused when metal contracts during solidification without enough feed metal.",
     images: {
-      low: "low shrink.jpg",
-      medium: "med shrink.jpg",
-      high: "high shrink.jpg"
+      low: getDefectImage("low-shrinkage.png"),
+      medium: getDefectImage("medium-shrinkage.png"),
+      high: getDefectImage("high-shrinkage.png")
     },
     severity: {
       low: {
@@ -272,7 +279,9 @@ const defectData = {
 const state = {
   defectKey: "porosity",
   severity: "medium",
-  reportId: "AX-0001"
+  reportId: "AX-0001",
+  uploadedImageUrl: "",
+  prediction: null
 };
 
 const elements = {
@@ -291,6 +300,10 @@ const elements = {
   materialInput: document.getElementById("materialInput"),
   locationInput: document.getElementById("locationInput"),
   notesInput: document.getElementById("notesInput"),
+  imageInput: document.getElementById("imageInput"),
+  uploadLabel: document.getElementById("uploadLabel"),
+  apiStatus: document.getElementById("apiStatus"),
+  resultSourceLabel: document.getElementById("resultSourceLabel"),
   libraryGrid: document.getElementById("libraryGrid"),
   librarySearch: document.getElementById("librarySearch"),
   toast: document.getElementById("toast")
@@ -300,13 +313,113 @@ function titleCase(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function normalizeDefectKey(value) {
+  const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const aliases = {
+    porosity: "porosity",
+    crack: "crack",
+    slag: "slag",
+    "slag inclusion": "slag",
+    misrun: "misrun",
+    corrosion: "corrosion",
+    shrinkage: "shrinkage"
+  };
+  return aliases[normalized] || null;
+}
+
+function normalizeSeverity(value) {
+  const normalized = value.toLowerCase();
+  return ["low", "medium", "high"].includes(normalized) ? normalized : null;
+}
+
 function getCurrentFinding() {
   const defect = defectData[state.defectKey];
   return {
     defect,
     finding: defect.severity[state.severity],
-    image: defect.images[state.severity]
+    image: state.uploadedImageUrl || defect.images[state.severity]
   };
+}
+
+function setApiStatus(message, status = "idle") {
+  elements.apiStatus.dataset.status = status;
+  elements.apiStatus.querySelector("span:last-child").textContent = message;
+}
+
+async function checkBackendConnection() {
+  setApiStatus("Checking backend connection...", "loading");
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/health`, {
+      cache: "no-store"
+    });
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || payload.status !== "ok") {
+      throw new Error(payload.detail || "Health check failed.");
+    }
+
+    const modelText = payload.model_ready ? "model ready" : "placeholder mode";
+    setApiStatus(`Backend connected (${modelText}).`, payload.model_ready ? "success" : "warning");
+  } catch (error) {
+    setApiStatus(`Backend unavailable: ${error.message}`, "error");
+  }
+}
+
+function applyPrediction(prediction) {
+  const defectKey = normalizeDefectKey(prediction.defect || "");
+  const severity = normalizeSeverity(prediction.severity || "");
+
+  if (defectKey) {
+    state.defectKey = defectKey;
+    elements.defectSelect.value = defectKey;
+  }
+
+  if (severity) {
+    state.severity = severity;
+  }
+
+  state.prediction = prediction;
+  renderDiagnosis();
+
+  const confidence = Math.round((prediction.confidence || 0) * 100);
+  const confidenceText = confidence > 0 ? ` Confidence: ${confidence}%.` : "";
+  const modelText = prediction.model_ready ? "Model response received." : "Backend placeholder response received.";
+  setApiStatus(`${modelText}${confidenceText}`, prediction.model_ready ? "success" : "warning");
+}
+
+async function predictUploadedImage(file) {
+  if (!file) return;
+
+  if (state.uploadedImageUrl) {
+    URL.revokeObjectURL(state.uploadedImageUrl);
+  }
+  state.uploadedImageUrl = URL.createObjectURL(file);
+  state.prediction = null;
+  elements.uploadLabel.textContent = file.name;
+  setApiStatus("Sending image to backend...", "loading");
+  renderDiagnosis();
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${apiBaseUrl}/predict`, {
+      method: "POST",
+      body: formData
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload.detail || "Prediction failed.");
+    }
+
+    applyPrediction(payload);
+    showToast("Backend prediction applied.");
+  } catch (error) {
+    setApiStatus(`Backend unavailable: ${error.message}`, "error");
+    showToast("Could not reach backend prediction API.");
+  }
 }
 
 function populateDefectSelect() {
@@ -331,6 +444,7 @@ function renderSeverityThumbs() {
 function renderDiagnosis() {
   const { defect, finding, image } = getCurrentFinding();
   elements.resultImage.src = image;
+  elements.resultSourceLabel.textContent = state.uploadedImageUrl ? "Uploaded image" : "Reference";
   elements.resultTitle.textContent = defect.name;
   elements.severityBadge.textContent = titleCase(state.severity);
   elements.severityBadge.className = `severity-pill ${state.severity}`;
@@ -394,16 +508,19 @@ function renderReport() {
 }
 
 function showPage(page) {
+  const availablePages = [...document.querySelectorAll(".page")].map((section) => section.dataset.page);
+  const nextPage = availablePages.includes(page) ? page : "diagnose";
+
   document.querySelectorAll(".page").forEach((section) => {
-    section.classList.toggle("active", section.dataset.page === page);
+    section.classList.toggle("active", section.dataset.page === nextPage);
   });
   document.querySelectorAll("[data-route]").forEach((link) => {
-    link.classList.toggle("active", link.dataset.route === page);
+    link.classList.toggle("active", link.dataset.route === nextPage);
   });
   document.querySelectorAll(".side-link").forEach((button) => {
-    button.classList.toggle("active", button.dataset.jump === page);
+    button.classList.toggle("active", button.dataset.jump === nextPage);
   });
-  window.location.hash = page;
+  window.location.hash = nextPage;
 }
 
 function showToast(message) {
@@ -426,6 +543,7 @@ function saveResult() {
     material: elements.materialInput.value,
     location: elements.locationInput.value,
     notes: elements.notesInput.value,
+    prediction: state.prediction,
     createdAt: new Date().toISOString()
   };
   localStorage.setItem("anomlyx-last-report", JSON.stringify(saved));
@@ -435,6 +553,7 @@ function saveResult() {
 function bindEvents() {
   elements.defectSelect.addEventListener("change", (event) => {
     state.defectKey = event.target.value;
+    state.prediction = null;
     renderDiagnosis();
   });
 
@@ -442,6 +561,7 @@ function bindEvents() {
     const button = event.target.closest("[data-severity]");
     if (!button) return;
     state.severity = button.dataset.severity;
+    state.prediction = null;
     renderDiagnosis();
   });
 
@@ -449,7 +569,12 @@ function bindEvents() {
     const button = event.target.closest("[data-thumb]");
     if (!button) return;
     state.severity = button.dataset.thumb;
+    state.prediction = null;
     renderDiagnosis();
+  });
+
+  elements.imageInput.addEventListener("change", (event) => {
+    predictUploadedImage(event.target.files[0]);
   });
 
   document.getElementById("updateBtn").addEventListener("click", () => {
@@ -466,6 +591,14 @@ function bindEvents() {
     window.setTimeout(() => {
       state.defectKey = "porosity";
       state.severity = "medium";
+      state.prediction = null;
+      if (state.uploadedImageUrl) {
+        URL.revokeObjectURL(state.uploadedImageUrl);
+      }
+      state.uploadedImageUrl = "";
+      elements.imageInput.value = "";
+      elements.uploadLabel.textContent = "Upload inspection image";
+      setApiStatus("Backend ready for image prediction.");
       elements.defectSelect.value = state.defectKey;
       renderDiagnosis();
     }, 0);
@@ -501,6 +634,7 @@ function bindEvents() {
       if (useDefect.dataset.useSeverity) {
         state.severity = useDefect.dataset.useSeverity;
       }
+      state.prediction = null;
       elements.defectSelect.value = state.defectKey;
       renderDiagnosis();
       showPage("diagnose");
@@ -524,6 +658,7 @@ function init() {
   renderLibrary();
   renderDiagnosis();
   bindEvents();
+  checkBackendConnection();
   showPage(window.location.hash.replace("#", "") || "diagnose");
 }
 

@@ -32,6 +32,8 @@ Inside it, create folders for each defect: Porosity, Crack, Slag_Inclusion, etc.
 
 Inside those, create sub-folders: Low, Medium, High.
 
+Status: Created in this repo for Porosity, Crack, Slag_Inclusion, Misrun, Corrosion, and Shrinkage.
+
 Step 2: Gather Images
 
 You will need at least 100 to 500 images per category to make a decent ML model.
@@ -62,15 +64,19 @@ Use a Python framework called Flask or FastAPI.
 
 You will write a simple script that says: "When the frontend sends me an image, pass it to the ML model, and send the text result back to the frontend."
 
+Status: Backend scaffold created with FastAPI in backend/. It has /health, /classes, and /predict. The /predict route accepts images now, but uses a placeholder until a trained model is connected.
+
 Phase 4: Integration (Connecting JS to Python)
-Goal: Replace the manual dropdown menus in your HTML with an "Upload Image" button.
+Goal: Add the image upload workflow only after the dataset, model, and Python API are ready.
 Tech Stack: JavaScript (Fetch API).
 
 Step 1: Update the UI
 
-Remove the <select> dropdowns.
+Keep the manual dropdowns during Phase 1 and Phase 2.
 
-Add an <input type="file" accept="image/*"> so the user can upload a photo from their phone or computer.
+The upload screen has been removed from the current web prototype because no ML model/API is connected yet.
+
+When the ML backend is ready, add an <input type="file" accept="image/*"> so the user can upload a photo from their phone or computer.
 
 Step 2: Write the Connection Logic
 
