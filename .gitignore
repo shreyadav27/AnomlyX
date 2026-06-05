@@ -1,0 +1,21 @@
+# Datasets
+dataset/
+Defect_Dataset/
+scfnet/
+industry_pred/
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# Local settings or env files
+.env
+.env.local
+.DS_Store
+
+# ML trained models and results (large binary files)
+ml/saved_models/
+ml/results/
+*.h5
+*.keras
