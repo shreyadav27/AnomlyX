@@ -1,29 +1,45 @@
 # AnomlyX Backend
 
-FastAPI backend for the future ML image diagnosis workflow.
+FastAPI backend for the AnomlyX ML image diagnosis workflow.
 
-This version gives the frontend a prediction API before the model is trained:
+The trained model is committed at `../ml/saved_models/defect_classifier.keras`,
+so teammates do **not** need to train the model before running the backend.
+When the model file is present, `/predict` uses real TensorFlow/Keras inference.
+If the model file is missing, the backend falls back to a small filename-based
+placeholder so the API can still be tested.
 
 - `GET /health` checks dataset/model configuration.
 - `GET /classes` reads defect folders from `Defect_Dataset`.
 - `POST /predict` accepts a JPG, PNG, or WEBP image and returns a prediction-shaped response.
 
-Until a trained model is connected, `/predict` uses a small filename stub. For example, uploading `high-crack.jpg` returns `Crack` and `high` with low confidence. This is only for API testing.
-
 The root frontend posts uploaded images to `http://127.0.0.1:8001/predict` and applies the returned `defect` and `severity` to the diagnosis/report UI.
 
 ## Setup
 
-Install Python 3.11 or newer, then run:
+Use Python **3.10, 3.11, or 3.12** because TensorFlow may not publish wheels for
+newer Python versions yet.
+
+Linux/macOS:
 
 ```bash
 cd backend
-python -m venv .venv
-.venv\Scripts\activate
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windows PowerShell:
+
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
 ## Run
+
+Linux/macOS or Windows PowerShell:
 
 ```bash
 uvicorn app.main:app --reload --port 8001
@@ -33,6 +49,30 @@ Open:
 
 ```text
 http://127.0.0.1:8001/docs
+```
+
+## Frontend
+
+Run the frontend from the project root in a second terminal.
+
+Linux/macOS:
+
+```bash
+cd /path/to/AnomlyX
+python3 -m http.server 8000
+```
+
+Windows PowerShell:
+
+```powershell
+cd C:\path\to\AnomlyX
+py -m http.server 8000
+```
+
+Open:
+
+```text
+http://localhost:8000
 ```
 
 ## Test Prediction
@@ -55,8 +95,13 @@ ANOMLYX_MAX_UPLOAD_MB=10
 
 ## Model Hook
 
-Connect the real model inside `app/predictor.py` in `predict_image()`.
-Keep the returned JSON fields stable:
+The backend automatically detects:
+
+```text
+../ml/saved_models/defect_classifier.keras
+```
+
+Keep the returned JSON fields stable if the prediction implementation changes:
 
 ```json
 {

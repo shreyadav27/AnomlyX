@@ -76,16 +76,108 @@ AnomlyX/
 └── README.md
 ```
 
+## Team Runbook
+
+The trained model is committed at `ml/saved_models/defect_classifier.keras`, so
+teammates do **not** need to train the model before running the app. After
+pulling the repo, start the backend and frontend in two separate terminals.
+
+Use Python **3.10, 3.11, or 3.12** for the backend because TensorFlow may not
+publish wheels for newer Python versions yet.
+
+### Linux/macOS
+
+Terminal 1 - backend:
+
+```bash
+git pull
+cd backend
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+Terminal 2 - frontend:
+
+```bash
+cd /path/to/AnomlyX
+python3 -m http.server 8000
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+Backend API docs:
+
+```text
+http://127.0.0.1:8001/docs
+```
+
+### Windows PowerShell
+
+Terminal 1 - backend:
+
+```powershell
+git pull
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+Terminal 2 - frontend:
+
+```powershell
+cd C:\path\to\AnomlyX
+py -m http.server 8000
+```
+
+Open:
+
+```text
+http://localhost:8000
+```
+
+Backend API docs:
+
+```text
+http://127.0.0.1:8001/docs
+```
+
+The backend automatically looks for:
+
+```text
+ml/saved_models/defect_classifier.keras
+```
+
+If the file exists, `/predict` uses the trained model. If it is missing, the
+backend falls back to the filename-based placeholder prediction.
+
 ## How to Run
 
 Because this is a static prototype, no build step is required. Start the backend first if you want image prediction.
 
-1. Start the backend:
+1. Start the backend on Linux/macOS:
 
 ```bash
 cd backend
-python -m venv .venv
-.venv\Scripts\activate
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+On Windows PowerShell:
+
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8001
 ```
@@ -94,6 +186,12 @@ uvicorn app.main:app --reload --port 8001
 
 ```bash
 python3 -m http.server 8000
+```
+
+On Windows PowerShell:
+
+```powershell
+py -m http.server 8000
 ```
 
 3. Visit:
@@ -106,12 +204,22 @@ You can also open `index.html` directly in a browser for manual diagnosis. The b
 
 ## Backend API
 
-Install Python 3.11 or newer, then run:
+Install Python 3.10, 3.11, or 3.12, then run:
 
 ```bash
 cd backend
-python -m venv .venv
-.venv\Scripts\activate
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+On Windows PowerShell:
+
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8001
 ```

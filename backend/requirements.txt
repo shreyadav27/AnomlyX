@@ -1,6 +1,8 @@
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 python-multipart==0.0.20
-tensorflow>=2.15.0
+# TensorFlow does not publish wheels for every Python release immediately.
+# Use Python 3.10-3.12 for backend inference.
+tensorflow>=2.15.0; python_version >= "3.10" and python_version < "3.13"
 numpy>=1.24.0
 Pillow>=10.0.0
