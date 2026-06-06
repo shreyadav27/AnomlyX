@@ -20,7 +20,11 @@ DATASET_DIR = resolve_path(
     os.getenv("ANOMLYX_DATASET_DIR", "../Defect_Dataset"),
     PROJECT_ROOT / "Defect_Dataset",
 )
-MODEL_PATH = resolve_path(os.getenv("ANOMLYX_MODEL_PATH", ""), BASE_DIR / "models" / "model")
+MODEL_PATH = resolve_path(
+    os.getenv("ANOMLYX_MODEL_PATH", ""),
+    PROJECT_ROOT / "ml" / "saved_models" / "defect_classifier.keras",
+)
+CLASS_NAMES_JSON = MODEL_PATH.parent / "class_names.json" if MODEL_PATH else None
 MAX_UPLOAD_BYTES = int(os.getenv("ANOMLYX_MAX_UPLOAD_MB", "10")) * 1024 * 1024
 
 ALLOWED_CONTENT_TYPES = {
@@ -28,6 +32,16 @@ ALLOWED_CONTENT_TYPES = {
     "image/png",
     "image/webp",
 }
+
+# Class names matching the training order (alphabetical from Defect_Dataset/)
+CLASS_NAMES = [
+    "Corrosion",
+    "Crack",
+    "Misrun",
+    "Porosity",
+    "Shrinkage",
+    "Slag_Inclusion",
+]
 
 DEFECT_ALIASES = {
     "porosity": "Porosity",
