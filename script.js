@@ -1,5 +1,6 @@
 const defectAssetPath = "assets/defects/";
 const apiBaseUrl = window.ANOMLYX_API_BASE_URL || "http://127.0.0.1:8002";
+const themeStorageKey = "anomlyx-theme";
 
 function getDefectImage(fileName) {
   return `${defectAssetPath}${fileName}`;
@@ -306,7 +307,10 @@ const elements = {
   resultSourceLabel: document.getElementById("resultSourceLabel"),
   libraryGrid: document.getElementById("libraryGrid"),
   librarySearch: document.getElementById("librarySearch"),
-  toast: document.getElementById("toast")
+  toast: document.getElementById("toast"),
+  themeToggle: document.getElementById("themeToggle"),
+  themeIcon: document.getElementById("themeIcon"),
+  themeLabel: document.getElementById("themeLabel")
 };
 
 function titleCase(value) {
@@ -555,6 +559,24 @@ function saveResult() {
   showToast("Result saved in browser storage.");
 }
 
+function applyTheme(theme) {
+  const nextTheme = theme === "dark" ? "dark" : "light";
+  document.body.dataset.theme = nextTheme;
+  elements.themeIcon.textContent = nextTheme === "dark" ? "light_mode" : "dark_mode";
+  elements.themeLabel.textContent = nextTheme === "dark" ? "Light" : "Dark";
+  elements.themeToggle.setAttribute(
+    "aria-label",
+    nextTheme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+  );
+}
+
+function generateDiagnosisReport() {
+  renderDiagnosis();
+  showPage("report");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast("Diagnosis generated.");
+}
+
 function bindEvents() {
   elements.defectSelect.addEventListener("change", (event) => {
     state.defectKey = event.target.value;
@@ -582,15 +604,9 @@ function bindEvents() {
     predictUploadedImage(event.target.files[0]);
   });
 
-  document.getElementById("updateBtn").addEventListener("click", () => {
-    renderReport();
-    showToast("Diagnosis updated.");
-  });
+  document.getElementById("updateBtn").addEventListener("click", generateDiagnosisReport);
 
-  document.getElementById("generateBtn").addEventListener("click", () => {
-    renderDiagnosis();
-    showToast("Diagnosis generated.");
-  });
+  document.getElementById("generateBtn").addEventListener("click", generateDiagnosisReport);
 
   document.getElementById("resetBtn").addEventListener("click", () => {
     window.setTimeout(() => {
@@ -621,6 +637,12 @@ function bindEvents() {
   });
 
   document.getElementById("saveBtn").addEventListener("click", saveResult);
+
+  elements.themeToggle.addEventListener("click", () => {
+    const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
+    localStorage.setItem(themeStorageKey, nextTheme);
+  });
 
   ["inspectorInput", "batchInput", "materialInput", "locationInput", "notesInput"].forEach((key) => {
     elements[key].addEventListener("input", renderReport);
@@ -659,6 +681,7 @@ function bindEvents() {
 
 function init() {
   state.reportId = `AX-${Math.floor(1000 + Math.random() * 9000)}`;
+  applyTheme(localStorage.getItem(themeStorageKey) || "light");
   populateDefectSelect();
   renderLibrary();
   renderDiagnosis();

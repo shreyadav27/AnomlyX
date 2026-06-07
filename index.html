@@ -15,12 +15,13 @@
       <span class="brand-mark">A</span>
       <span>AnomlyX</span>
     </a>
-    <nav class="topnav" aria-label="Primary navigation">
-      <a href="#diagnose" data-route="diagnose">Diagnose</a>
-      <a href="#library" data-route="library">Defect Library</a>
-      <a href="#report" data-route="report">Report</a>
-    </nav>
-    <span class="prototype-badge">API Connected</span>
+    <div class="topbar-actions">
+      <span class="prototype-badge">API Connected</span>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">
+        <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
   </header>
 
   <main class="app-shell">
@@ -122,7 +123,7 @@
             <div class="button-row">
               <button type="button" class="primary-action" id="updateBtn">
                 <span class="material-symbols-outlined">check_circle</span>
-                Update Result
+                Generate Diagnosis
               </button>
               <button type="reset" class="ghost-action" id="resetBtn">
                 <span class="material-symbols-outlined">restart_alt</span>

@@ -14,7 +14,41 @@
   --amber: #d97706;
   --red: #dc2626;
   --shadow: 0 12px 35px rgba(11, 28, 48, 0.09);
+  --topbar-bg: rgba(255, 255, 255, 0.94);
+  --line-card-bg: rgba(255, 255, 255, 0.62);
+  --input-bg: #ffffff;
+  --upload-bg: #fff7ed;
+  --icon-surface: #ffffff;
+  --badge-bg: #fff2e8;
+  --badge-border: #ffb690;
+  --badge-text: #783200;
   --radius: 8px;
+}
+
+body[data-theme="dark"] {
+  --bg: #0f141b;
+  --surface: #171d26;
+  --surface-low: #202937;
+  --surface-mid: #151c26;
+  --surface-high: #2b3647;
+  --text: #e8edf5;
+  --muted: #a8b3c3;
+  --border: #354153;
+  --primary: #f4f7fb;
+  --accent: #f59e0b;
+  --accent-strong: #fb923c;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --shadow: 0 14px 36px rgba(0, 0, 0, 0.36);
+  --topbar-bg: rgba(17, 24, 34, 0.94);
+  --line-card-bg: rgba(32, 41, 55, 0.78);
+  --input-bg: #111827;
+  --upload-bg: #241b14;
+  --icon-surface: #202937;
+  --badge-bg: #241b14;
+  --badge-border: #7c3b12;
+  --badge-text: #fed7aa;
 }
 
 * {
@@ -58,7 +92,7 @@ button {
   justify-content: space-between;
   height: 64px;
   padding: 0 32px;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--topbar-bg);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(10px);
 }
@@ -80,7 +114,7 @@ button {
   place-items: center;
   border-radius: 6px;
   background: var(--primary);
-  color: white;
+  color: var(--surface);
   font-weight: 800;
 }
 
@@ -103,19 +137,47 @@ button {
   color: var(--accent);
 }
 
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
 .prototype-badge {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
   padding: 0 10px;
-  border: 1px solid #ffb690;
+  border: 1px solid var(--badge-border);
   border-radius: 999px;
-  background: #fff2e8;
-  color: #783200;
+  background: var(--badge-bg);
+  color: var(--badge-text);
   font-family: "JetBrains Mono", monospace;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent);
 }
 
 .app-shell {
@@ -141,7 +203,7 @@ button {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--line-card-bg);
 }
 
 .line-card .material-symbols-outlined {
@@ -151,7 +213,7 @@ button {
   place-items: center;
   border-radius: 6px;
   background: var(--primary);
-  color: white;
+  color: var(--surface);
 }
 
 .line-card strong,
@@ -187,7 +249,7 @@ button {
 .side-link.active,
 .side-link:hover {
   background: var(--accent-strong);
-  color: #341100;
+  color: #241000;
 }
 
 .content {
@@ -285,7 +347,7 @@ textarea {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--input-bg);
   color: var(--text);
   padding: 11px 12px;
   outline: none;
@@ -335,7 +397,7 @@ textarea:focus {
   padding: 18px;
   border: 1px dashed var(--accent-strong);
   border-radius: var(--radius);
-  background: #fff7ed;
+  background: var(--upload-bg);
   color: var(--text);
   text-align: center;
   cursor: pointer;
@@ -347,7 +409,7 @@ textarea:focus {
   height: 42px;
   place-items: center;
   border-radius: 50%;
-  background: white;
+  background: var(--icon-surface);
   color: var(--accent);
 }
 
@@ -476,12 +538,12 @@ textarea:focus {
 .primary-action {
   border: 1px solid var(--primary);
   background: var(--primary);
-  color: white;
+  color: var(--surface);
 }
 
 .ghost-action {
   border: 1px solid var(--border);
-  background: white;
+  background: var(--surface);
   color: var(--text);
 }
 
@@ -492,13 +554,15 @@ textarea:focus {
 
 .result-panel {
   display: grid;
-  grid-template-columns: minmax(300px, 44%) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   overflow: hidden;
 }
 
 .result-visual {
   position: relative;
-  min-height: 100%;
+  width: min(100%, 560px);
+  aspect-ratio: 1;
+  justify-self: center;
   background: var(--primary);
 }
 
@@ -506,7 +570,6 @@ textarea:focus {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 520px;
   object-fit: cover;
   opacity: 0.9;
 }
@@ -636,7 +699,7 @@ textarea:focus {
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: white;
+  background: var(--surface);
   box-shadow: 0 8px 20px rgba(11, 28, 48, 0.06);
 }
 
@@ -726,7 +789,7 @@ textarea:focus {
   padding: 42px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: white;
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 
@@ -852,7 +915,6 @@ textarea:focus {
 @media (max-width: 1020px) {
   .app-shell,
   .diagnosis-grid,
-  .result-panel,
   .report-content {
     grid-template-columns: 1fr;
   }
@@ -865,8 +927,8 @@ textarea:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .result-visual img {
-    min-height: 300px;
+  .result-visual {
+    width: min(100%, 520px);
   }
 }
 
