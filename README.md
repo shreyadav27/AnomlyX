@@ -65,10 +65,11 @@ The trained model predicts defect type. Severity is still derived from filename 
 
 ```text
 AnomlyX/
-├── index.html          # Main application markup
-├── styles.css          # Application styling and responsive layout
-├── script.js           # Defect data, UI rendering, navigation, reports
-├── assets/defects/     # Normalized defect reference images
+├── frontend/           # Static frontend application
+│   ├── index.html      # Main application markup
+│   ├── styles.css      # Application styling and responsive layout
+│   ├── script.js       # Defect data, UI rendering, navigation, reports
+│   └── assets/defects/ # Normalized defect reference images
 ├── backend/            # FastAPI backend for future ML prediction
 ├── Defect_Dataset/     # Training dataset folders grouped by defect/severity
 ├── frontend.md         # UI prompt/design notes
@@ -101,7 +102,7 @@ uvicorn app.main:app --reload --port 8002
 Terminal 2 - frontend:
 
 ```bash
-cd /path/to/AnomlyX
+cd /path/to/AnomlyX/frontend
 python3 -m http.server 8000
 ```
 
@@ -133,7 +134,7 @@ uvicorn app.main:app --reload --port 8002
 Terminal 2 - frontend:
 
 ```powershell
-cd C:\path\to\AnomlyX
+cd C:\path\to\AnomlyX\frontend
 py -m http.server 8000
 ```
 
@@ -182,15 +183,17 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8002
 ```
 
-2. Serve the frontend from the project root:
+2. Serve the frontend from the `frontend` folder:
 
 ```bash
+cd frontend
 python3 -m http.server 8000
 ```
 
 On Windows PowerShell:
 
 ```powershell
+cd frontend
 py -m http.server 8000
 ```
 
@@ -200,7 +203,7 @@ py -m http.server 8000
 http://localhost:8000
 ```
 
-You can also open `index.html` directly in a browser for manual diagnosis. The backend allows local static origins and direct-file development.
+You can also open `frontend/index.html` directly in a browser for manual diagnosis. The backend allows local static origins and direct-file development.
 
 ## Backend API
 
@@ -242,7 +245,7 @@ Available endpoints:
 2. Upload an inspection image to call the backend prediction API.
 3. Or select a defect type and choose `Low`, `Medium`, or `High` severity manually.
 4. Add optional inspector, batch, material, location, and notes.
-5. Click `Generate Diagnosis` or `Update Result`.
+5. Click `Generate Diagnosis`.
 6. Use `Print Report` to open the report page and print/export from the browser.
 7. Use the `Defect Library` to browse supported defects and load one into the diagnosis workflow.
 
@@ -250,7 +253,7 @@ Available endpoints:
 
 - The extra `manual-porosity-enhanced.png` asset is not currently used by the app workflow.
 - The backend falls back to a filename-based placeholder if the trained model file is not present.
-- The app uses static frontend data. Defects, remedies, and image paths are hard-coded in `script.js`.
+- The app uses static frontend data. Defects, remedies, and image paths are hard-coded in `frontend/script.js`.
 - Saved results only store the latest report in browser `localStorage`; there is no report history database.
 - Print/export currently relies on the browser print dialog instead of a dedicated PDF export library.
 - The diagnostic guidance is educational/prototype content and should be validated by qualified manufacturing or quality-control experts before real production use.
@@ -258,7 +261,7 @@ Available endpoints:
 ## Future Improvements
 
 - Move defect data into a JSON file or backend service.
-- Keep new image assets named with the same pattern: `assets/defects/<severity>-<defect>.png`.
+- Keep new image assets named with the same pattern: `frontend/assets/defects/<severity>-<defect>.png`.
 - Add more defect categories such as blowhole, undercut, lack of fusion, pitting corrosion, cold shut, and surface roughness.
 - Add report history, exportable PDFs, and persistent inspection records.
 - Improve the trained model with more balanced images and severity-aware labels.

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from .config import ALLOWED_CONTENT_TYPES, DATASET_DIR, MAX_UPLOAD_BYTES, MODEL_PATH, PROJECT_ROOT
+from .config import ALLOWED_CONTENT_TYPES, DATASET_DIR, FRONTEND_DIR, MAX_UPLOAD_BYTES, MODEL_PATH
 from .predictor import discover_classes, get_model_status, predict_image
 
 
@@ -40,17 +40,17 @@ def root() -> dict[str, str]:
 
 @app.get("/app", include_in_schema=False)
 def frontend() -> FileResponse:
-    return FileResponse(PROJECT_ROOT / "index.html")
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 
 @app.get("/styles.css", include_in_schema=False)
 def styles() -> FileResponse:
-    return FileResponse(PROJECT_ROOT / "styles.css")
+    return FileResponse(FRONTEND_DIR / "styles.css")
 
 
 @app.get("/script.js", include_in_schema=False)
 def script() -> FileResponse:
-    return FileResponse(PROJECT_ROOT / "script.js")
+    return FileResponse(FRONTEND_DIR / "script.js")
 
 
 @app.get("/health")
@@ -104,4 +104,4 @@ async def predict(file: UploadFile = File(...)) -> dict[str, object]:
     }
 
 
-app.mount("/assets", StaticFiles(directory=PROJECT_ROOT / "assets"), name="assets")
+app.mount("/assets", StaticFiles(directory=FRONTEND_DIR / "assets"), name="assets")

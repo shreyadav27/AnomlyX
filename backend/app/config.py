@@ -4,6 +4,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = BASE_DIR.parent
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
 
 
 def resolve_path(value: str, fallback: Path) -> Path:

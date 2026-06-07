@@ -12,7 +12,7 @@ placeholder so the API can still be tested.
 - `GET /classes` reads defect folders from `Defect_Dataset`.
 - `POST /predict` accepts a JPG, PNG, or WEBP image and returns a prediction-shaped response.
 
-The root frontend posts uploaded images to `http://127.0.0.1:8002/predict` and applies the returned `defect` and `severity` to the diagnosis/report UI.
+The frontend in `../frontend` posts uploaded images to `http://127.0.0.1:8002/predict` and applies the returned `defect` and `severity` to the diagnosis/report UI.
 
 ## Setup
 
@@ -53,19 +53,19 @@ http://127.0.0.1:8002/docs
 
 ## Frontend
 
-Run the frontend from the project root in a second terminal.
+Run the frontend from the `frontend` folder in a second terminal.
 
 Linux/macOS:
 
 ```bash
-cd /path/to/AnomlyX
+cd /path/to/AnomlyX/frontend
 python3 -m http.server 8000
 ```
 
 Windows PowerShell:
 
 ```powershell
-cd C:\path\to\AnomlyX
+cd C:\path\to\AnomlyX\frontend
 py -m http.server 8000
 ```
 
@@ -80,7 +80,7 @@ http://localhost:8000
 Use the Swagger page at `/docs`, or run:
 
 ```bash
-curl -X POST "http://127.0.0.1:8002/predict" -F "file=@../assets/defects/high-crack.png"
+curl -X POST "http://127.0.0.1:8002/predict" -F "file=@../frontend/assets/defects/high-crack.png"
 ```
 
 ## Environment
