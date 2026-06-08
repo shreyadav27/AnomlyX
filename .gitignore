@@ -6,6 +6,7 @@ industry_pred/
 
 # Python virtual environment
 .venv/
+.venv312/
 __pycache__/
 *.pyc
 

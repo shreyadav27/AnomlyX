@@ -19,6 +19,17 @@ The frontend in `../frontend` posts uploaded images to `http://127.0.0.1:8002/pr
 Use Python **3.10, 3.11, or 3.12** because TensorFlow may not publish wheels for
 newer Python versions yet.
 
+Windows PowerShell quick start:
+
+```powershell
+cd backend
+.\start-backend.ps1
+```
+
+This creates/uses `.venv312`, installs `requirements.txt`, and starts the API on
+`http://127.0.0.1:8002`. Use this script on Windows when your default Python is
+newer than 3.12.
+
 Linux/macOS:
 
 ```bash
@@ -32,17 +43,23 @@ Windows PowerShell:
 
 ```powershell
 cd backend
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
+py -3.12 -m venv .venv312
+.\.venv312\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
 ## Run
 
-Linux/macOS or Windows PowerShell:
+Linux/macOS:
 
 ```bash
 uvicorn app.main:app --reload --port 8002
+```
+
+Windows PowerShell:
+
+```powershell
+.\start-backend.ps1
 ```
 
 Open:
