@@ -302,6 +302,8 @@ const elements = {
   libraryGrid: document.getElementById("libraryGrid"),
   librarySearch: document.getElementById("librarySearch"),
   toast: document.getElementById("toast"),
+  guideButton: document.getElementById("guideButton"),
+  guideModal: document.getElementById("guideModal"),
   themeToggle: document.getElementById("themeToggle"),
   themeIcon: document.getElementById("themeIcon"),
   themeLabel: document.getElementById("themeLabel")
@@ -528,6 +530,18 @@ function showToast(message) {
   }, 2200);
 }
 
+function openGuide() {
+  elements.guideModal.hidden = false;
+  document.body.classList.add("guide-open");
+  elements.guideModal.querySelector("[data-guide-close]").focus();
+}
+
+function closeGuide() {
+  elements.guideModal.hidden = true;
+  document.body.classList.remove("guide-open");
+  elements.guideButton.focus();
+}
+
 function saveResult() {
   const { defect } = getCurrentFinding();
   const saved = {
@@ -623,6 +637,14 @@ function bindEvents() {
 
   document.getElementById("saveBtn")?.addEventListener("click", saveResult);
 
+  elements.guideButton.addEventListener("click", openGuide);
+
+  elements.guideModal.addEventListener("click", (event) => {
+    if (event.target === elements.guideModal || event.target.closest("[data-guide-close]")) {
+      closeGuide();
+    }
+  });
+
   elements.themeToggle.addEventListener("click", () => {
     const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
     applyTheme(nextTheme);
@@ -661,6 +683,12 @@ function bindEvents() {
   window.addEventListener("hashchange", () => {
     const page = window.location.hash.replace("#", "") || "diagnose";
     showPage(page);
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !elements.guideModal.hidden) {
+      closeGuide();
+    }
   });
 }
 

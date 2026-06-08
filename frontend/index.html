@@ -17,6 +17,10 @@
     </a>
     <div class="topbar-actions">
       <span class="prototype-badge">API Connected</span>
+      <button class="topbar-button" id="guideButton" type="button" aria-haspopup="dialog" aria-controls="guideModal">
+        <span class="material-symbols-outlined">help</span>
+        <span>Guide</span>
+      </button>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">
         <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
         <span id="themeLabel">Dark</span>
@@ -207,6 +211,65 @@
       </section>
     </section>
   </main>
+
+  <div class="guide-modal" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideTitle" hidden>
+    <div class="guide-dialog">
+      <header class="guide-header">
+        <div>
+          <p class="eyebrow">Workflow guide</p>
+          <h2 id="guideTitle">How to use AnomlyX</h2>
+        </div>
+        <button class="icon-button" type="button" data-guide-close aria-label="Close guide">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </header>
+
+      <ol class="guide-steps">
+        <li>
+          <span class="material-symbols-outlined">upload_file</span>
+          <div>
+            <strong>Upload an inspection image</strong>
+            <p>Select a JPG, PNG, or WEBP image. The API sends it to the model and applies the predicted defect and severity.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-outlined">tune</span>
+          <div>
+            <strong>Adjust manual inputs</strong>
+            <p>Use the defect selector, severity controls, and reference thumbnails when you need to correct or test the diagnosis manually.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-outlined">edit_note</span>
+          <div>
+            <strong>Add inspection details</strong>
+            <p>Fill inspector, batch, material, location, and notes so the report has the right production context.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-outlined">check_circle</span>
+          <div>
+            <strong>Generate the diagnosis</strong>
+            <p>Click Generate Diagnosis to open the report with the selected image, root cause, remedy, and prevention checklist.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-outlined">print</span>
+          <div>
+            <strong>Print or review the report</strong>
+            <p>Use Print on the report page, or go back to Diagnosis to revise the inputs and regenerate the report.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="guide-footer">
+        <button class="primary-action" type="button" data-guide-close>
+          <span class="material-symbols-outlined">done</span>
+          Got it
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
