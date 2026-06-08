@@ -290,12 +290,6 @@ const elements = {
   severityGroup: document.getElementById("severityGroup"),
   severityThumbs: document.getElementById("severityThumbs"),
   resultImage: document.getElementById("resultImage"),
-  resultTitle: document.getElementById("resultTitle"),
-  severityBadge: document.getElementById("severityBadge"),
-  visualSigns: document.getElementById("visualSigns"),
-  rootCause: document.getElementById("rootCause"),
-  remedy: document.getElementById("remedy"),
-  preventionList: document.getElementById("preventionList"),
   inspectorInput: document.getElementById("inspectorInput"),
   batchInput: document.getElementById("batchInput"),
   materialInput: document.getElementById("materialInput"),
@@ -454,13 +448,6 @@ function renderDiagnosis() {
   const { defect, finding, image } = getCurrentFinding();
   elements.resultImage.src = image;
   elements.resultSourceLabel.textContent = state.uploadedImageUrl ? "Uploaded image" : "Reference";
-  elements.resultTitle.textContent = defect.name;
-  elements.severityBadge.textContent = titleCase(state.severity);
-  elements.severityBadge.className = `severity-pill ${state.severity}`;
-  elements.visualSigns.textContent = finding.visual;
-  elements.rootCause.textContent = finding.root;
-  elements.remedy.textContent = finding.remedy;
-  elements.preventionList.innerHTML = finding.prevention.map((item) => `<li>${item}</li>`).join("");
 
   document.querySelectorAll("[data-severity]").forEach((button) => {
     button.classList.toggle("active", button.dataset.severity === state.severity);
@@ -623,7 +610,7 @@ function bindEvents() {
     }, 0);
   });
 
-  document.getElementById("printBtn").addEventListener("click", () => {
+  document.getElementById("printBtn")?.addEventListener("click", () => {
     renderReport();
     showPage("report");
     window.setTimeout(() => window.print(), 120);
@@ -634,7 +621,7 @@ function bindEvents() {
     window.print();
   });
 
-  document.getElementById("saveBtn").addEventListener("click", saveResult);
+  document.getElementById("saveBtn")?.addEventListener("click", saveResult);
 
   elements.themeToggle.addEventListener("click", () => {
     const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";

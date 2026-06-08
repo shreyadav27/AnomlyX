@@ -554,7 +554,7 @@ textarea:focus {
 
 .result-panel {
   display: grid;
-  grid-template-rows: auto 1fr;
+  place-items: center;
   overflow: hidden;
 }
 
