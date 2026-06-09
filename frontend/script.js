@@ -2,6 +2,14 @@ const defectAssetPath = "assets/defects/";
 const apiBaseUrl = window.ANOMLYX_API_BASE_URL || "http://127.0.0.1:8002";
 const themeStorageKey = "anomlyx-theme";
 const historyStorageKey = "anomlyx-history";
+const userStorageKey = "anomlyx-current-user";
+
+const loginUsers = [
+  { role: "Inspector", name: "Student Inspector", icon: "engineering", label: "Inspection line" },
+  { role: "Supervisor", name: "Line Supervisor", icon: "admin_panel_settings", label: "Review access" },
+  { role: "Analyst", name: "Quality Analyst", icon: "analytics", label: "Quality lab" },
+  { role: "Personal", name: "Personal User", icon: "person", label: "Personal space" }
+];
 
 function getDefectImage(fileName) {
   return `${defectAssetPath}${fileName}`;
@@ -284,10 +292,18 @@ const state = {
   reportId: "AX-0001",
   uploadedImageUrl: "",
   uploadedImageDataUrl: "",
-  prediction: null
+  prediction: null,
+  currentUser: null,
+  selectedLoginRole: loginUsers[0].role
 };
 
 const elements = {
+  loginView: document.getElementById("loginView"),
+  loginForm: document.getElementById("loginForm"),
+  loginRoleGroup: document.getElementById("loginRoleGroup"),
+  loginNameInput: document.getElementById("loginNameInput"),
+  authUserName: document.getElementById("authUserName"),
+  logoutButton: document.getElementById("logoutButton"),
   defectSelect: document.getElementById("defectSelect"),
   severityGroup: document.getElementById("severityGroup"),
   severityThumbs: document.getElementById("severityThumbs"),
@@ -548,8 +564,13 @@ function getSelectedHistoryUser() {
 
 function renderHistory() {
   const records = getHistoryRecords();
-  const inspectors = [...new Set(records.map((record) => record.inspector || "Inspector not set"))].sort();
-  const selectedUser = inspectors.includes(getSelectedHistoryUser()) ? getSelectedHistoryUser() : "all";
+  const inspectorSet = new Set(records.map((record) => record.inspector || "Inspector not set"));
+  if (state.currentUser?.name) {
+    inspectorSet.add(state.currentUser.name);
+  }
+  const inspectors = [...inspectorSet].sort();
+  const preferredUser = state.currentUser?.name || "all";
+  const selectedUser = inspectors.includes(getSelectedHistoryUser()) ? getSelectedHistoryUser() : preferredUser;
 
   elements.historyUserFilter.innerHTML = [
     '<option value="all">All inspectors</option>',
@@ -655,6 +676,75 @@ function closeGuide() {
   elements.guideButton.focus();
 }
 
+function getLoginUserByRole(role) {
+  return loginUsers.find((user) => user.role === role) || loginUsers[0];
+}
+
+function renderLoginRoles() {
+  elements.loginRoleGroup.innerHTML = loginUsers
+    .map((user) => `
+      <button class="login-user ${user.role === state.selectedLoginRole ? "active" : ""}" type="button" data-login-role="${escapeHtml(user.role)}">
+        <span class="material-symbols-outlined">${escapeHtml(user.icon)}</span>
+        <strong>${escapeHtml(user.role)}</strong>
+        <small>${escapeHtml(user.label)}</small>
+      </button>
+    `)
+    .join("");
+}
+
+function selectLoginRole(role) {
+  const user = getLoginUserByRole(role);
+  state.selectedLoginRole = user.role;
+  if (!elements.loginNameInput.value.trim()) {
+    elements.loginNameInput.value = user.name;
+  }
+  renderLoginRoles();
+}
+
+function applyCurrentUser(user) {
+  state.currentUser = user;
+  elements.authUserName.textContent = user.name;
+  elements.inspectorInput.value = user.name;
+  elements.historyUserFilter.value = user.name;
+  document.body.classList.remove("auth-pending");
+  renderReport();
+  renderHistory();
+}
+
+function signIn(user) {
+  localStorage.setItem(userStorageKey, JSON.stringify(user));
+  applyCurrentUser(user);
+  showToast(`Signed in as ${user.name}.`);
+}
+
+function restoreCurrentUser() {
+  try {
+    const user = JSON.parse(localStorage.getItem(userStorageKey) || "null");
+    if (user?.name && user?.role) {
+      state.selectedLoginRole = user.role;
+      elements.loginNameInput.value = user.name;
+      renderLoginRoles();
+      applyCurrentUser(user);
+      return;
+    }
+  } catch {
+    localStorage.removeItem(userStorageKey);
+  }
+
+  selectLoginRole(state.selectedLoginRole);
+  document.body.classList.add("auth-pending");
+}
+
+function signOut() {
+  localStorage.removeItem(userStorageKey);
+  state.currentUser = null;
+  elements.authUserName.textContent = "Guest";
+  elements.loginNameInput.value = getLoginUserByRole(state.selectedLoginRole).name;
+  document.body.classList.add("auth-pending");
+  renderLoginRoles();
+  showToast("Signed out.");
+}
+
 function saveResult() {
   const { defect, finding, image } = getCurrentFinding();
   const saved = {
@@ -701,6 +791,21 @@ function generateDiagnosisReport() {
 }
 
 function bindEvents() {
+  elements.loginRoleGroup.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-login-role]");
+    if (!button) return;
+    selectLoginRole(button.dataset.loginRole);
+  });
+
+  elements.loginForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const roleUser = getLoginUserByRole(state.selectedLoginRole);
+    const name = elements.loginNameInput.value.trim() || roleUser.name;
+    signIn({ role: roleUser.role, name });
+  });
+
+  elements.logoutButton.addEventListener("click", signOut);
+
   elements.defectSelect.addEventListener("change", (event) => {
     state.defectKey = event.target.value;
     state.prediction = null;
@@ -848,11 +953,13 @@ function bindEvents() {
 function init() {
   state.reportId = createReportId();
   applyTheme(localStorage.getItem(themeStorageKey) || "dark");
+  renderLoginRoles();
   populateDefectSelect();
   renderLibrary();
   renderHistory();
   renderDiagnosis();
   bindEvents();
+  restoreCurrentUser();
   checkBackendConnection();
   showPage(window.location.hash.replace("#", "") || "diagnose");
 }

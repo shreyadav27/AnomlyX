@@ -82,9 +82,157 @@ body.guide-open {
   overflow: hidden;
 }
 
+body.auth-pending .topbar,
+body.auth-pending .app-shell {
+  display: none;
+}
+
 .material-symbols-outlined {
   font-size: 20px;
   vertical-align: middle;
+}
+
+.login-view {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(253, 118, 26, 0.12), transparent 34%),
+    linear-gradient(315deg, rgba(15, 159, 110, 0.1), transparent 32%),
+    var(--bg);
+}
+
+body:not(.auth-pending) .login-view {
+  display: none;
+}
+
+.login-shell {
+  display: grid;
+  width: min(100%, 940px);
+  grid-template-columns: minmax(220px, 0.85fr) minmax(320px, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.login-brand {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 32px;
+  background: var(--surface-mid);
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.login-brand::after {
+  content: "Metal Defect Diagnostic Prototype";
+  max-width: 220px;
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px;
+}
+
+.login-card h1 {
+  margin: 6px 0 8px;
+  font-size: 30px;
+  line-height: 1.14;
+}
+
+.login-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.login-users {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.login-user {
+  display: grid;
+  min-height: 104px;
+  gap: 8px;
+  align-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-low);
+  color: var(--text);
+  padding: 14px;
+  text-align: left;
+}
+
+.login-user .material-symbols-outlined {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 6px;
+  background: var(--icon-surface);
+  color: var(--accent);
+}
+
+.login-user strong,
+.login-user small {
+  display: block;
+}
+
+.login-user small {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.login-user.active,
+.login-user:hover {
+  border-color: var(--accent-strong);
+  background: var(--upload-bg);
+}
+
+.login-submit {
+  width: 100%;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  max-width: 220px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.user-chip span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .topbar {
@@ -1159,9 +1307,14 @@ textarea:focus {
 
 @media (max-width: 1020px) {
   .app-shell,
+  .login-shell,
   .diagnosis-grid,
   .report-content {
     grid-template-columns: 1fr;
+  }
+
+  .login-brand {
+    min-height: auto;
   }
 
   .sidebar {
@@ -1189,6 +1342,27 @@ textarea:focus {
   .topbar-actions {
     flex-wrap: wrap;
     justify-content: flex-end;
+  }
+
+  .login-view {
+    padding: 16px;
+  }
+
+  .login-card,
+  .login-brand {
+    padding: 22px;
+  }
+
+  .login-card h1 {
+    font-size: 25px;
+  }
+
+  .login-users {
+    grid-template-columns: 1fr;
+  }
+
+  .user-chip {
+    max-width: 100%;
   }
 
   .topnav {

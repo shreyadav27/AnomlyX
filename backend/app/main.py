@@ -55,7 +55,7 @@ def script() -> FileResponse:
 
 @app.get("/health")
 def health() -> dict[str, object]:
-    model_status = get_model_status(load=False)
+    model_status = get_model_status(load=True)
     return {
         "status": "ok",
         "dataset_dir": str(DATASET_DIR),

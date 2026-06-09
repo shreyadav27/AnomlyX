@@ -9,7 +9,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Material+Symbols+Outlined:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="dark">
+<body class="auth-pending" data-theme="dark">
+  <section class="login-view" id="loginView" aria-labelledby="loginTitle">
+    <div class="login-shell">
+      <div class="login-brand">
+        <span class="brand-mark">A</span>
+        <span>AnomlyX</span>
+      </div>
+      <form class="login-card" id="loginForm">
+        <div>
+          <p class="eyebrow">Inspector access</p>
+          <h1 id="loginTitle">Sign in to diagnosis workspace</h1>
+          <p>Choose your user role and continue with your own inspection history.</p>
+        </div>
+
+        <div class="login-users" id="loginRoleGroup" aria-label="User role"></div>
+
+        <label>
+          User Name
+          <input id="loginNameInput" autocomplete="name" placeholder="Enter inspector name">
+        </label>
+
+        <button class="primary-action login-submit" type="submit">
+          <span class="material-symbols-outlined">login</span>
+          Continue
+        </button>
+      </form>
+    </div>
+  </section>
+
   <header class="topbar">
     <a class="brand" href="#diagnose" aria-label="AnomlyX home">
       <span class="brand-mark">A</span>
@@ -17,9 +45,17 @@
     </a>
     <div class="topbar-actions">
       <span class="prototype-badge">API Connected</span>
+      <span class="user-chip">
+        <span class="material-symbols-outlined">account_circle</span>
+        <span id="authUserName">Guest</span>
+      </span>
       <button class="topbar-button" id="guideButton" type="button" aria-haspopup="dialog" aria-controls="guideModal">
         <span class="material-symbols-outlined">help</span>
         <span>Guide</span>
+      </button>
+      <button class="topbar-button" id="logoutButton" type="button">
+        <span class="material-symbols-outlined">logout</span>
+        <span>Logout</span>
       </button>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">
         <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
