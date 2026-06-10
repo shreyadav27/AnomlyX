@@ -14,7 +14,7 @@
     <div class="login-shell">
       <div class="login-brand">
         <span class="brand-mark">A</span>
-        <span>AnomlyX</span>
+        <span class="login-brand-name">AnomlyX</span>
       </div>
       <form class="login-card" id="loginForm">
         <div>
@@ -28,6 +28,11 @@
         <label>
           User Name
           <input id="loginNameInput" autocomplete="name" placeholder="Enter inspector name">
+        </label>
+
+        <label>
+          Email Address
+          <input id="loginEmailInput" type="email" autocomplete="email" placeholder="name@example.com" required>
         </label>
 
         <button class="primary-action login-submit" type="submit">
@@ -46,7 +51,7 @@
     <div class="topbar-actions">
       <span class="prototype-badge">API Connected</span>
       <span class="user-chip">
-        <span class="material-symbols-outlined">account_circle</span>
+        <span class="material-symbols-outlined">person</span>
         <span id="authUserName">Guest</span>
       </span>
       <button class="topbar-button" id="guideButton" type="button" aria-haspopup="dialog" aria-controls="guideModal">

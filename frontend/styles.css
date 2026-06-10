@@ -1,54 +1,77 @@
 :root {
-  --bg: #f8f9ff;
-  --surface: #ffffff;
-  --surface-low: #eff4ff;
-  --surface-mid: #e5eeff;
-  --surface-high: #d3e4fe;
-  --text: #0b1c30;
-  --muted: #5e6674;
-  --border: #c6c6cd;
-  --primary: #111827;
-  --accent: #9d4300;
-  --accent-strong: #fd761a;
-  --green: #0f9f6e;
-  --amber: #d97706;
-  --red: #dc2626;
-  --shadow: 0 12px 35px rgba(11, 28, 48, 0.09);
-  --topbar-bg: rgba(255, 255, 255, 0.94);
-  --line-card-bg: rgba(255, 255, 255, 0.62);
-  --input-bg: #ffffff;
-  --upload-bg: #fff7ed;
-  --icon-surface: #ffffff;
-  --badge-bg: #fff2e8;
-  --badge-border: #ffb690;
-  --badge-text: #783200;
+  --bg: #000000;
+  --surface: rgba(31, 21, 12, 0.94);
+  --surface-low: rgba(65, 45, 21, 0.62);
+  --surface-mid: rgba(31, 21, 12, 0.82);
+  --surface-high: rgba(65, 45, 21, 0.88);
+  --text: #e1dcc9;
+  --muted: rgba(225, 220, 201, 0.72);
+  --border: rgba(225, 220, 201, 0.22);
+  --primary: #e1dcc9;
+  --accent: #d0a35f;
+  --accent-strong: #c98632;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #fb7185;
+  --shadow: 0 18px 42px rgba(0, 0, 0, 0.46);
+  --topbar-bg: rgba(0, 0, 0, 0.86);
+  --line-card-bg: rgba(65, 45, 21, 0.52);
+  --input-bg: rgba(0, 0, 0, 0.64);
+  --upload-bg: rgba(65, 45, 21, 0.5);
+  --icon-surface: rgba(0, 0, 0, 0.56);
+  --badge-bg: rgba(225, 220, 201, 0.1);
+  --badge-border: rgba(225, 220, 201, 0.34);
+  --badge-text: #e1dcc9;
   --radius: 8px;
 }
 
 body[data-theme="dark"] {
-  --bg: #0f141b;
-  --surface: #171d26;
-  --surface-low: #202937;
-  --surface-mid: #151c26;
-  --surface-high: #2b3647;
-  --text: #e8edf5;
-  --muted: #a8b3c3;
-  --border: #354153;
-  --primary: #f4f7fb;
-  --accent: #f59e0b;
-  --accent-strong: #fb923c;
+  --bg: #000000;
+  --surface: rgba(31, 21, 12, 0.94);
+  --surface-low: rgba(65, 45, 21, 0.62);
+  --surface-mid: rgba(31, 21, 12, 0.82);
+  --surface-high: rgba(65, 45, 21, 0.88);
+  --text: #e1dcc9;
+  --muted: rgba(225, 220, 201, 0.72);
+  --border: rgba(225, 220, 201, 0.22);
+  --primary: #e1dcc9;
+  --accent: #d0a35f;
+  --accent-strong: #c98632;
   --green: #34d399;
   --amber: #fbbf24;
-  --red: #f87171;
-  --shadow: 0 14px 36px rgba(0, 0, 0, 0.36);
-  --topbar-bg: rgba(17, 24, 34, 0.94);
-  --line-card-bg: rgba(32, 41, 55, 0.78);
-  --input-bg: #111827;
-  --upload-bg: #241b14;
-  --icon-surface: #202937;
-  --badge-bg: #241b14;
-  --badge-border: #7c3b12;
-  --badge-text: #fed7aa;
+  --red: #fb7185;
+  --shadow: 0 18px 42px rgba(0, 0, 0, 0.46);
+  --topbar-bg: rgba(0, 0, 0, 0.86);
+  --line-card-bg: rgba(65, 45, 21, 0.52);
+  --input-bg: rgba(0, 0, 0, 0.64);
+  --upload-bg: rgba(65, 45, 21, 0.5);
+  --icon-surface: rgba(0, 0, 0, 0.56);
+  --badge-bg: rgba(225, 220, 201, 0.1);
+  --badge-border: rgba(225, 220, 201, 0.34);
+  --badge-text: #e1dcc9;
+}
+
+body[data-theme="light"] {
+  --bg: #e1dcc9;
+  --surface: rgba(255, 252, 241, 0.92);
+  --surface-low: rgba(65, 45, 21, 0.1);
+  --surface-mid: rgba(31, 21, 12, 0.12);
+  --surface-high: rgba(65, 45, 21, 0.18);
+  --text: #000000;
+  --muted: rgba(31, 21, 12, 0.68);
+  --border: rgba(65, 45, 21, 0.22);
+  --primary: #1f150c;
+  --accent: #412d15;
+  --accent-strong: #000000;
+  --shadow: 0 18px 42px rgba(31, 21, 12, 0.16);
+  --topbar-bg: rgba(225, 220, 201, 0.9);
+  --line-card-bg: rgba(255, 252, 241, 0.72);
+  --input-bg: rgba(255, 252, 241, 0.82);
+  --upload-bg: rgba(65, 45, 21, 0.1);
+  --icon-surface: rgba(31, 21, 12, 0.1);
+  --badge-bg: rgba(65, 45, 21, 0.1);
+  --badge-border: rgba(65, 45, 21, 0.26);
+  --badge-text: #1f150c;
 }
 
 * {
@@ -62,9 +85,17 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    linear-gradient(135deg, #412d15 0%, #1f150c 36%, #000000 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body[data-theme="light"] {
+  background:
+    linear-gradient(135deg, #e1dcc9 0%, #d3cab0 46%, #b7a47c 100%);
+  background-attachment: fixed;
 }
 
 button,
@@ -98,9 +129,16 @@ body.auth-pending .app-shell {
   place-items: center;
   padding: 24px;
   background:
-    linear-gradient(135deg, rgba(253, 118, 26, 0.12), transparent 34%),
-    linear-gradient(315deg, rgba(15, 159, 110, 0.1), transparent 32%),
-    var(--bg);
+    linear-gradient(135deg, rgba(225, 220, 201, 0.14), transparent 34%),
+    linear-gradient(315deg, rgba(65, 45, 21, 0.34), transparent 32%),
+    linear-gradient(135deg, #412d15 0%, #1f150c 36%, #000000 100%);
+}
+
+body[data-theme="light"] .login-view {
+  background:
+    linear-gradient(135deg, rgba(65, 45, 21, 0.12), transparent 34%),
+    linear-gradient(315deg, rgba(31, 21, 12, 0.1), transparent 32%),
+    linear-gradient(135deg, #e1dcc9 0%, #d3cab0 46%, #b7a47c 100%);
 }
 
 body:not(.auth-pending) .login-view {
@@ -119,23 +157,54 @@ body:not(.auth-pending) .login-view {
 }
 
 .login-brand {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   min-height: 100%;
   flex-direction: column;
   justify-content: space-between;
   gap: 28px;
   padding: 32px;
-  background: var(--surface-mid);
-  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.78)),
+    linear-gradient(135deg, rgba(225, 220, 201, 0.2), transparent 42%),
+    #412d15;
+  color: #e1dcc9;
   font-size: 28px;
   font-weight: 800;
+}
+
+.login-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 28% 24%, rgba(255, 255, 255, 0.5), transparent 24%),
+    linear-gradient(45deg, transparent 42%, rgba(225, 220, 201, 0.44) 43% 45%, rgba(0, 0, 0, 0.42) 46% 50%, transparent 51%) 0 0 / 28px 28px,
+    linear-gradient(45deg, transparent 42%, rgba(225, 220, 201, 0.36) 43% 45%, rgba(31, 21, 12, 0.35) 46% 50%, transparent 51%) 14px 14px / 28px 28px,
+    linear-gradient(120deg, transparent 0 50%, rgba(225, 220, 201, 0.28) 50% 51%, transparent 51%);
+  opacity: 0.80;
+  pointer-events: none;
+}
+
+.login-brand > span,
+.login-brand::after {
+  position: relative;
+  z-index: 1;
+}
+
+.login-brand-name {
+  font-size: 42px;
+  line-height: 1;
 }
 
 .login-brand::after {
   content: "Metal Defect Diagnostic Prototype";
   max-width: 220px;
-  color: var(--muted);
-  font-family: "JetBrains Mono", monospace;
+  color: rgba(225, 220, 201, 0.78);
+    font-family: "JetBrains Mono", monospace;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.6;
@@ -427,7 +496,7 @@ body:not(.auth-pending) .login-view {
 .side-link.active,
 .side-link:hover {
   background: var(--accent-strong);
-  color: #241000;
+  color: var(--bg);
 }
 
 .content {
@@ -539,7 +608,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent-strong);
-  box-shadow: 0 0 0 3px rgba(253, 118, 26, 0.18);
+  box-shadow: 0 0 0 3px rgba(225, 220, 201, 0.16);
 }
 
 .segmented {

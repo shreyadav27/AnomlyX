@@ -302,6 +302,7 @@ const elements = {
   loginForm: document.getElementById("loginForm"),
   loginRoleGroup: document.getElementById("loginRoleGroup"),
   loginNameInput: document.getElementById("loginNameInput"),
+  loginEmailInput: document.getElementById("loginEmailInput"),
   authUserName: document.getElementById("authUserName"),
   sidebarRoleName: document.getElementById("sidebarRoleName"),
   logoutButton: document.getElementById("logoutButton"),
@@ -347,6 +348,14 @@ function escapeHtml(value) {
       "'": "&#39;"
     }[character];
   });
+}
+
+function normalizeEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function getCurrentUserEmail() {
+  return normalizeEmail(state.currentUser?.email);
 }
 
 function createReportId() {
@@ -575,12 +584,25 @@ function setHistoryRecords(records) {
   localStorage.setItem(historyStorageKey, JSON.stringify(records));
 }
 
+function getCurrentUserHistoryRecords() {
+  const userEmail = getCurrentUserEmail();
+  if (!userEmail) return [];
+  return getHistoryRecords().filter((record) => normalizeEmail(record.userEmail) === userEmail);
+}
+
+function setCurrentUserHistoryRecords(userRecords) {
+  const userEmail = getCurrentUserEmail();
+  if (!userEmail) return;
+  const otherRecords = getHistoryRecords().filter((record) => normalizeEmail(record.userEmail) !== userEmail);
+  setHistoryRecords([...userRecords, ...otherRecords]);
+}
+
 function getSelectedHistoryUser() {
   return elements.historyUserFilter.value || "all";
 }
 
 function renderHistory() {
-  const records = getHistoryRecords();
+  const records = getCurrentUserHistoryRecords();
   const inspectorSet = new Set(records.map((record) => record.inspector || "Inspector not set"));
   if (state.currentUser?.name) {
     inspectorSet.add(state.currentUser.name);
@@ -718,7 +740,10 @@ function selectLoginRole(role) {
 }
 
 function applyCurrentUser(user) {
-  state.currentUser = user;
+  state.currentUser = {
+    ...user,
+    email: normalizeEmail(user.email)
+  };
   elements.authUserName.textContent = user.name;
   elements.sidebarRoleName.textContent = user.role;
   elements.inspectorInput.value = user.name;
@@ -737,13 +762,15 @@ function signIn(user) {
 function restoreCurrentUser() {
   try {
     const user = JSON.parse(localStorage.getItem(userStorageKey) || "null");
-    if (user?.name && user?.role) {
+    if (user?.name && user?.role && user?.email) {
       state.selectedLoginRole = user.role;
       elements.loginNameInput.value = user.name;
+      elements.loginEmailInput.value = normalizeEmail(user.email);
       renderLoginRoles();
       applyCurrentUser(user);
       return;
     }
+    localStorage.removeItem(userStorageKey);
   } catch {
     localStorage.removeItem(userStorageKey);
   }
@@ -758,6 +785,7 @@ function signOut() {
   elements.authUserName.textContent = "Guest";
   elements.sidebarRoleName.textContent = "Guest";
   elements.loginNameInput.value = getLoginUserByRole(state.selectedLoginRole).name;
+  elements.loginEmailInput.value = "";
   document.body.classList.add("auth-pending");
   renderLoginRoles();
   showToast("Signed out.");
@@ -765,8 +793,12 @@ function signOut() {
 
 function saveResult() {
   const { defect, finding, image } = getCurrentFinding();
+  const userEmail = getCurrentUserEmail();
   const saved = {
     id: state.reportId,
+    userEmail,
+    userName: state.currentUser?.name || "",
+    userRole: state.currentUser?.role || "",
     defectKey: state.defectKey,
     defect: defect.name,
     severity: state.severity,
@@ -784,7 +816,7 @@ function saveResult() {
   };
 
   localStorage.setItem("anomlyx-last-report", JSON.stringify(saved));
-  setHistoryRecords([saved, ...getHistoryRecords().filter((record) => record.id !== saved.id)].slice(0, 100));
+  setCurrentUserHistoryRecords([saved, ...getCurrentUserHistoryRecords().filter((record) => record.id !== saved.id)].slice(0, 100));
   renderHistory();
   showToast("Diagnosis saved to history.");
 }
@@ -819,7 +851,12 @@ function bindEvents() {
     event.preventDefault();
     const roleUser = getLoginUserByRole(state.selectedLoginRole);
     const name = elements.loginNameInput.value.trim() || roleUser.name;
-    signIn({ role: roleUser.role, name });
+    const email = normalizeEmail(elements.loginEmailInput.value);
+    if (!email) {
+      elements.loginEmailInput.focus();
+      return;
+    }
+    signIn({ role: roleUser.role, name, email });
   });
 
   elements.logoutButton.addEventListener("click", signOut);
@@ -904,7 +941,7 @@ function bindEvents() {
   elements.historyUserFilter.addEventListener("change", renderHistory);
 
   elements.clearHistoryBtn.addEventListener("click", () => {
-    setHistoryRecords([]);
+    setCurrentUserHistoryRecords([]);
     renderHistory();
     showToast("History cleared.");
   });
@@ -931,7 +968,7 @@ function bindEvents() {
 
     const historyLoad = event.target.closest("[data-history-load]");
     if (historyLoad) {
-      const record = getHistoryRecords().find((item) => item.id === historyLoad.dataset.historyLoad);
+      const record = getCurrentUserHistoryRecords().find((item) => item.id === historyLoad.dataset.historyLoad);
       if (!record) return;
       state.reportId = record.id;
       state.defectKey = record.defectKey || normalizeDefectKey(record.defect) || "porosity";
