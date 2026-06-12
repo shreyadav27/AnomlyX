@@ -72,10 +72,10 @@
   <main class="app-shell">
     <aside class="sidebar">
       <section class="line-card">
-        <span class="material-symbols-outlined">factory</span>
+        <span class="material-symbols-outlined" id="sidebarUserIcon">person</span>
         <div>
           <strong id="sidebarRoleName">Guest</strong>
-          <small>Steel Line 04</small>
+          <small id="sidebarUserEmail">Not signed in</small>
         </div>
       </section>
       <button class="side-link active" data-jump="diagnose">
@@ -117,6 +117,10 @@
               <span class="material-symbols-outlined">upload_file</span>
               <strong id="uploadLabel">Upload inspection image</strong>
               <small>JPG, PNG, or WEBP. The backend predicts the defect and severity.</small>
+              <div class="upload-loading" id="uploadLoading" role="status" aria-live="polite" hidden>
+                <span class="upload-spinner" aria-hidden="true"></span>
+                <span>Analyzing uploaded image...</span>
+              </div>
               <input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp">
             </label>
 
@@ -255,6 +259,7 @@
           <div class="summary-table">
             <div><small>Defect Type</small><strong id="reportDefect"></strong></div>
             <div><small>Severity</small><strong id="reportSeverity"></strong></div>
+            <div><small>Confidence</small><strong id="reportConfidence"></strong></div>
             <div><small>Material</small><strong id="reportMaterial"></strong></div>
             <div><small>Batch ID</small><strong id="reportBatch"></strong></div>
           </div>

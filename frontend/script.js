@@ -304,7 +304,9 @@ const elements = {
   loginNameInput: document.getElementById("loginNameInput"),
   loginEmailInput: document.getElementById("loginEmailInput"),
   authUserName: document.getElementById("authUserName"),
+  sidebarUserIcon: document.getElementById("sidebarUserIcon"),
   sidebarRoleName: document.getElementById("sidebarRoleName"),
+  sidebarUserEmail: document.getElementById("sidebarUserEmail"),
   logoutButton: document.getElementById("logoutButton"),
   defectSelect: document.getElementById("defectSelect"),
   severityGroup: document.getElementById("severityGroup"),
@@ -317,6 +319,7 @@ const elements = {
   notesInput: document.getElementById("notesInput"),
   imageInput: document.getElementById("imageInput"),
   uploadLabel: document.getElementById("uploadLabel"),
+  uploadLoading: document.getElementById("uploadLoading"),
   apiStatus: document.getElementById("apiStatus"),
   resultSourceLabel: document.getElementById("resultSourceLabel"),
   libraryGrid: document.getElementById("libraryGrid"),
@@ -420,6 +423,10 @@ function setApiStatus(message, status = "idle") {
   elements.apiStatus.querySelector("span:last-child").textContent = message;
 }
 
+function setUploadLoading(isLoading) {
+  elements.uploadLoading.hidden = !isLoading;
+}
+
 async function checkBackendConnection() {
   setApiStatus("Checking backend connection...", "loading");
 
@@ -477,6 +484,7 @@ async function predictUploadedImage(file) {
   state.uploadedImageDataUrl = "";
   state.prediction = null;
   elements.uploadLabel.textContent = file.name;
+  setUploadLoading(true);
   setApiStatus("Sending image to backend...", "loading");
   renderDiagnosis();
 
@@ -503,10 +511,15 @@ async function predictUploadedImage(file) {
     }
 
     applyPrediction(payload);
+    renderReport();
+    showPage("report");
+    window.scrollTo({ top: 0, behavior: "smooth" });
     showToast("Backend prediction applied.");
   } catch (error) {
     setApiStatus(`Backend unavailable: ${error.message}`, "error");
     showToast("Could not reach backend prediction API.");
+  } finally {
+    setUploadLoading(false);
   }
 }
 
@@ -669,6 +682,9 @@ function renderReport() {
   document.getElementById("reportInspector").textContent = elements.inspectorInput.value || "Inspector not set";
   document.getElementById("reportDefect").textContent = defect.name;
   document.getElementById("reportSeverity").textContent = titleCase(state.severity);
+  document.getElementById("reportConfidence").textContent = state.prediction?.confidence
+    ? `${Math.round(state.prediction.confidence * 100)}%`
+    : "Manual";
   document.getElementById("reportMaterial").textContent = elements.materialInput.value || "Not specified";
   document.getElementById("reportBatch").textContent = elements.batchInput.value || "Not specified";
   document.getElementById("reportImage").src = image;
@@ -745,7 +761,9 @@ function applyCurrentUser(user) {
     email: normalizeEmail(user.email)
   };
   elements.authUserName.textContent = user.name;
+  elements.sidebarUserIcon.textContent = getLoginUserByRole(user.role).icon;
   elements.sidebarRoleName.textContent = user.role;
+  elements.sidebarUserEmail.textContent = state.currentUser.email;
   elements.inspectorInput.value = user.name;
   elements.historyUserFilter.value = user.name;
   document.body.classList.remove("auth-pending");
@@ -783,7 +801,9 @@ function signOut() {
   localStorage.removeItem(userStorageKey);
   state.currentUser = null;
   elements.authUserName.textContent = "Guest";
+  elements.sidebarUserIcon.textContent = "person";
   elements.sidebarRoleName.textContent = "Guest";
+  elements.sidebarUserEmail.textContent = "Not signed in";
   elements.loginNameInput.value = getLoginUserByRole(state.selectedLoginRole).name;
   elements.loginEmailInput.value = "";
   document.body.classList.add("auth-pending");
@@ -901,6 +921,7 @@ function bindEvents() {
       state.uploadedImageDataUrl = "";
       elements.imageInput.value = "";
       elements.uploadLabel.textContent = "Upload inspection image";
+      setUploadLoading(false);
       setApiStatus("Backend ready for image prediction.");
       elements.defectSelect.value = state.defectKey;
       renderDiagnosis();

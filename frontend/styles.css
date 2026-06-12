@@ -685,6 +685,42 @@ textarea:focus {
   pointer-events: none;
 }
 
+.upload-loading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.upload-loading[hidden] {
+  display: none;
+}
+
+.upload-spinner {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(29, 78, 216, 0.22);
+  border-top-color: #1d4ed8;
+  border-radius: 50%;
+  animation: upload-spin 0.85s linear infinite;
+}
+
+@keyframes upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .api-status {
   display: flex;
   align-items: center;
