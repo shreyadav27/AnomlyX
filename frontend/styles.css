@@ -2189,5 +2189,31 @@ textarea:focus {
   .report-sheet {
     border: 0;
     box-shadow: none;
+    color: #111827;
+  }
+
+  .report-header,
+  .summary-table div + div {
+    border-color: #cbd5e1;
+  }
+
+  .report-header h1,
+  .summary-table strong,
+  .report-content h2,
+  .report-checklist h2 {
+    color: #111827;
+  }
+
+  .report-header p,
+  .report-meta,
+  .summary-table small,
+  .report-content p,
+  .report-checklist ul {
+    color: #374151;
+  }
+
+  .summary-table,
+  .report-checklist {
+    background: #ffffff;
   }
 }
