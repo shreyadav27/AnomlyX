@@ -1,4 +1,8 @@
-"""Central configuration for the AnomlyX ML pipeline."""
+"""Central configuration for the AnomlyX ML pipeline.
+
+Updated for 4-class classification with EfficientNetB0 backbone.
+Classes: Casting_Defect, Corrosion, Crack, Slag_Inclusion
+"""
 
 from pathlib import Path
 
@@ -17,39 +21,40 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 MODEL_SAVE_PATH = SAVED_MODELS_DIR / "defect_classifier.keras"
 
 # ── Image preprocessing ─────────────────────────────────────────────────────
-IMG_SIZE = (224, 224)           # MobileNetV2 default input size
-BATCH_SIZE = 16                 # Small batches for small dataset
-INPUT_SHAPE = (*IMG_SIZE, 3)   # (224, 224, 3)
+IMG_SIZE = (224, 224)           # EfficientNetB0 default input size
+BATCH_SIZE = 16                 # Balanced for dataset size (~960 images)
+INPUT_SHAPE = (*IMG_SIZE, 3)    # (224, 224, 3)
 
 # ── Training hyperparameters ─────────────────────────────────────────────────
-EPOCHS_FROZEN = 20              # Phase 1: train head only (base frozen)
-EPOCHS_FINETUNE = 30            # Phase 2: fine-tune top layers of base
+EPOCHS_FROZEN = 30              # Phase 1: train head only (base frozen)
+EPOCHS_FINETUNE = 40            # Phase 2: fine-tune top layers of base
 LEARNING_RATE_FROZEN = 1e-3     # Higher LR for head warm-up
 LEARNING_RATE_FINETUNE = 1e-5   # Very low LR for fine-tuning
 VALIDATION_SPLIT = 0.20         # 80/20 train-val split
+LABEL_SMOOTHING = 0.1           # Prevents overconfident predictions
 
 # ── Dataset class names ──────────────────────────────────────────────────────
 # Sorted alphabetically to match tf.keras.utils.image_dataset_from_directory
-# default label ordering. Verified against Defect_Dataset/ folder names.
+# default label ordering. Must match Defect_Dataset/ folder names.
 CLASS_NAMES = [
+    "Casting_Defect",
     "Corrosion",
     "Crack",
-    "Misrun",
-    "Porosity",
-    "Shrinkage",
     "Slag_Inclusion",
 ]
 
 NUM_CLASSES = len(CLASS_NAMES)
 
 # ── Data augmentation bounds ─────────────────────────────────────────────────
+# Tuned for industrial defect images — moderate augmentation to increase
+# effective dataset size without creating unrealistic transformations.
 AUGMENTATION_CONFIG = {
-    "rotation_factor": 0.15,       # ±15% of 2π (~±54°)
-    "width_shift": 0.2,            # ±20% horizontal shift
-    "height_shift": 0.2,           # ±20% vertical shift
-    "zoom_range": 0.2,             # ±20% zoom
+    "rotation_factor": 0.15,        # ±15% of 2π (~±54°) — defects can appear at any angle
+    "width_shift": 0.15,            # ±15% horizontal shift
+    "height_shift": 0.15,           # ±15% vertical shift
+    "zoom_range": (-0.15, 0.15),    # ±15% zoom
     "horizontal_flip": True,
     "vertical_flip": True,
-    "brightness_range": 0.2,       # ±20% brightness
-    "contrast_range": 0.2,         # ±20% contrast
+    "brightness_range": 0.2,        # ±20% brightness — accounts for lighting variation
+    "contrast_range": 0.2,          # ±20% contrast
 }

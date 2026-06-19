@@ -4,14 +4,15 @@
 Usage:
     python train.py
 
-Two-phase training:
+Two-phase training with EfficientNetB0:
     Phase 1 — Frozen base: train only the classification head.
-    Phase 2 — Fine-tune: unfreeze top MobileNetV2 layers and train end-to-end
+    Phase 2 — Fine-tune: unfreeze top EfficientNetB0 layers and train end-to-end
               with a very low learning rate.
 
 Saves:
     ml/saved_models/defect_classifier.keras   — best model (by val_accuracy)
     ml/results/training_history.png           — accuracy/loss curves
+    ml/results/training_metrics.json          — metrics for programmatic access
 """
 
 import json
@@ -48,14 +49,14 @@ def get_callbacks(phase: str) -> list[tf.keras.callbacks.Callback]:
         ),
         tf.keras.callbacks.EarlyStopping(
             monitor="val_accuracy",
-            patience=8 if phase == "frozen" else 10,
+            patience=15 if phase == "frozen" else 12,
             restore_best_weights=True,
             verbose=1,
         ),
         tf.keras.callbacks.ReduceLROnPlateau(
             monitor="val_loss",
             factor=0.5,
-            patience=3,
+            patience=4,
             min_lr=1e-7,
             verbose=1,
         ),
@@ -115,12 +116,13 @@ def plot_training_history(
 def main() -> None:
     """Run the full two-phase training pipeline."""
     print("=" * 70)
-    print("  AnomlyX Defect Classifier — Training Pipeline")
+    print("  AnomlyX Defect Classifier — Training Pipeline (v2)")
+    print("  Backbone: EfficientNetB0 | Classes: 4")
     print("=" * 70)
 
     # ── Load dataset ─────────────────────────────────────────────────────
     print("\n📦 Loading dataset...")
-    train_ds, val_ds, class_names = load_datasets()
+    train_ds, val_ds, class_names, class_weights = load_datasets()
 
     # Count samples
     train_count = sum(len(labels) for _, labels in train_ds)
@@ -130,7 +132,7 @@ def main() -> None:
     print(f"  Classes: {class_names}")
 
     # ── Build model ──────────────────────────────────────────────────────
-    print("\n🏗️  Building model...")
+    print("\n🏗️  Building EfficientNetB0 model...")
     model = build_model(num_classes=len(class_names))
     print(get_model_summary(model))
 
@@ -144,6 +146,7 @@ def main() -> None:
         validation_data=val_ds,
         epochs=EPOCHS_FROZEN,
         callbacks=get_callbacks("frozen"),
+        class_weight=class_weights,
         verbose=1,
     )
 
@@ -152,7 +155,7 @@ def main() -> None:
 
     # ── Phase 2: Fine-tune top layers ────────────────────────────────────
     print("\n" + "=" * 70)
-    print("  Phase 2: Fine-tuning top MobileNetV2 layers")
+    print("  Phase 2: Fine-tuning top EfficientNetB0 layers")
     print("=" * 70)
 
     model = unfreeze_for_finetuning(model, fine_tune_from=100)
@@ -163,6 +166,7 @@ def main() -> None:
         epochs=EPOCHS_FROZEN + EPOCHS_FINETUNE,
         initial_epoch=len(history_frozen.history["accuracy"]),
         callbacks=get_callbacks("finetune"),
+        class_weight=class_weights,
         verbose=1,
     )
 
@@ -179,12 +183,30 @@ def main() -> None:
         json.dump(class_names, f, indent=2)
     print(f"  Class names saved to {class_names_path}")
 
+    # ── Save training metrics as JSON ────────────────────────────────────
+    best_val_acc = max(best_val_acc_p1, best_val_acc_p2)
+    metrics = {
+        "best_val_accuracy": float(best_val_acc),
+        "phase1_best_val_accuracy": float(best_val_acc_p1),
+        "phase2_best_val_accuracy": float(best_val_acc_p2),
+        "phase1_epochs": len(history_frozen.history["accuracy"]),
+        "phase2_epochs": len(history_finetune.history["accuracy"]),
+        "class_names": class_names,
+        "class_weights": {str(k): v for k, v in class_weights.items()},
+        "train_samples": train_count,
+        "val_samples": val_count,
+    }
+    metrics_path = str(RESULTS_DIR / "training_metrics.json")
+    with open(metrics_path, "w") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"  Training metrics saved to {metrics_path}")
+
     # ── Final summary ────────────────────────────────────────────────────
     print("\n" + "=" * 70)
     print("  Training Complete!")
     print("=" * 70)
     print(f"  Model saved to:    {MODEL_SAVE_PATH}")
-    print(f"  Best val accuracy: {max(best_val_acc_p1, best_val_acc_p2):.4f}")
+    print(f"  Best val accuracy: {best_val_acc:.4f}")
     print(f"  Classes:           {class_names}")
     print(f"\n  Next steps:")
     print(f"    1. Run evaluation:  python evaluate.py")
