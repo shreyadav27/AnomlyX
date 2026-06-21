@@ -18,5 +18,6 @@ __pycache__/
 # ML trained models and results (large binary files)
 ml/saved_models/
 ml/results/
+model.zip
 *.h5
 *.keras

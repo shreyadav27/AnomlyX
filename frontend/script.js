@@ -292,6 +292,7 @@ const state = {
   reportId: "AX-0001",
   uploadedImageUrl: "",
   uploadedImageDataUrl: "",
+  uploadedImageSaveDataUrl: "",
   prediction: null,
   currentUser: null,
   selectedLoginRole: loginUsers[0].role
@@ -390,6 +391,31 @@ function readFileAsDataUrl(file) {
   });
 }
 
+function createStoredImageDataUrl(dataUrl, maxDimension = 900, quality = 0.82) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.addEventListener("load", () => {
+      const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+      const width = Math.max(1, Math.round(image.naturalWidth * scale));
+      const height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        resolve(dataUrl);
+        return;
+      }
+
+      context.drawImage(image, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    });
+    image.addEventListener("error", () => resolve(dataUrl));
+    image.src = dataUrl;
+  });
+}
+
 function normalizeDefectKey(value) {
   const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const aliases = {
@@ -482,18 +508,26 @@ async function predictUploadedImage(file) {
   }
   state.uploadedImageUrl = URL.createObjectURL(file);
   state.uploadedImageDataUrl = "";
+  state.uploadedImageSaveDataUrl = "";
   state.prediction = null;
   elements.uploadLabel.textContent = file.name;
   setUploadLoading(true);
   setApiStatus("Sending image to backend...", "loading");
   renderDiagnosis();
 
-  readFileAsDataUrl(file)
+  const storedImagePromise = readFileAsDataUrl(file)
     .then((dataUrl) => {
       state.uploadedImageDataUrl = dataUrl;
+      return createStoredImageDataUrl(dataUrl);
+    })
+    .then((storedDataUrl) => {
+      state.uploadedImageSaveDataUrl = storedDataUrl;
+      return storedDataUrl;
     })
     .catch(() => {
       state.uploadedImageDataUrl = "";
+      state.uploadedImageSaveDataUrl = "";
+      return "";
     });
 
   const formData = new FormData();
@@ -512,9 +546,11 @@ async function predictUploadedImage(file) {
 
     applyPrediction(payload);
     renderReport();
+    await storedImagePromise;
+    const saved = saveResult({ silent: true });
     showPage("report");
     window.scrollTo({ top: 0, behavior: "smooth" });
-    showToast("Backend prediction applied.");
+    showToast(saved ? "Backend prediction applied and saved." : "Backend prediction applied, but history could not be saved.");
   } catch (error) {
     setApiStatus(`Backend unavailable: ${error.message}`, "error");
     showToast("Could not reach backend prediction API.");
@@ -811,7 +847,7 @@ function signOut() {
   showToast("Signed out.");
 }
 
-function saveResult() {
+function saveResult({ silent = false } = {}) {
   const { defect, finding, image } = getCurrentFinding();
   const userEmail = getCurrentUserEmail();
   const saved = {
@@ -827,7 +863,7 @@ function saveResult() {
     material: elements.materialInput.value.trim(),
     location: elements.locationInput.value.trim(),
     notes: elements.notesInput.value.trim(),
-    image: state.uploadedImageDataUrl || image,
+    image: state.uploadedImageSaveDataUrl || state.uploadedImageDataUrl || image,
     root: finding.root,
     remedy: finding.remedy,
     prevention: finding.prevention,
@@ -835,10 +871,20 @@ function saveResult() {
     createdAt: new Date().toISOString()
   };
 
-  localStorage.setItem("anomlyx-last-report", JSON.stringify(saved));
-  setCurrentUserHistoryRecords([saved, ...getCurrentUserHistoryRecords().filter((record) => record.id !== saved.id)].slice(0, 100));
-  renderHistory();
-  showToast("Diagnosis saved to history.");
+  try {
+    localStorage.setItem("anomlyx-last-report", JSON.stringify(saved));
+    setCurrentUserHistoryRecords([saved, ...getCurrentUserHistoryRecords().filter((record) => record.id !== saved.id)].slice(0, 100));
+    renderHistory();
+    if (!silent) {
+      showToast("Diagnosis saved to history.");
+    }
+    return true;
+  } catch (error) {
+    if (!silent) {
+      showToast("Could not save diagnosis. Browser storage is full.");
+    }
+    return false;
+  }
 }
 
 function applyTheme(theme) {
@@ -919,6 +965,7 @@ function bindEvents() {
       }
       state.uploadedImageUrl = "";
       state.uploadedImageDataUrl = "";
+      state.uploadedImageSaveDataUrl = "";
       elements.imageInput.value = "";
       elements.uploadLabel.textContent = "Upload inspection image";
       setUploadLoading(false);
@@ -997,6 +1044,7 @@ function bindEvents() {
       state.prediction = record.prediction || null;
       state.uploadedImageUrl = "";
       state.uploadedImageDataUrl = record.image || "";
+      state.uploadedImageSaveDataUrl = record.image || "";
       elements.defectSelect.value = state.defectKey;
       elements.inspectorInput.value = record.inspector || "";
       elements.batchInput.value = record.batch || "";
