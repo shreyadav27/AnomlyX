@@ -4,6 +4,7 @@ Updated for 4-class classification with EfficientNetB0 backbone.
 Classes: Casting_Defect, Corrosion, Crack, Slag_Inclusion
 """
 
+import os
 from pathlib import Path
 
 # ── Paths ────────────────────────────────────────────────────────────────────
@@ -26,8 +27,8 @@ BATCH_SIZE = 16                 # Balanced for dataset size (~960 images)
 INPUT_SHAPE = (*IMG_SIZE, 3)    # (224, 224, 3)
 
 # ── Training hyperparameters ─────────────────────────────────────────────────
-EPOCHS_FROZEN = 30              # Phase 1: train head only (base frozen)
-EPOCHS_FINETUNE = 40            # Phase 2: fine-tune top layers of base
+EPOCHS_FROZEN = int(os.getenv("ANOMLYX_EPOCHS_FROZEN", "30"))      # Phase 1: train head only
+EPOCHS_FINETUNE = int(os.getenv("ANOMLYX_EPOCHS_FINETUNE", "40"))  # Phase 2: fine-tune base top
 LEARNING_RATE_FROZEN = 1e-3     # Higher LR for head warm-up
 LEARNING_RATE_FINETUNE = 1e-5   # Very low LR for fine-tuning
 VALIDATION_SPLIT = 0.20         # 80/20 train-val split

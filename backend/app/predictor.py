@@ -155,7 +155,7 @@ def _load_model():
 
 
 def _preprocess_image_bytes(image_bytes: bytes) -> np.ndarray:
-    """Convert raw image bytes to a preprocessed MobileNetV2 input array."""
+    """Convert raw image bytes to the EfficientNetB0 input shape."""
     import numpy as np
     import tensorflow as tf
     from PIL import Image
@@ -168,7 +168,6 @@ def _preprocess_image_bytes(image_bytes: bytes) -> np.ndarray:
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize(IMG_SIZE, Image.Resampling.LANCZOS)
     img_array = np.array(img, dtype=np.float32)
-    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
 
     return np.expand_dims(img_array, axis=0)
 

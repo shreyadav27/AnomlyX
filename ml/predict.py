@@ -25,20 +25,17 @@ from config import CLASS_NAMES, IMG_SIZE, MODEL_SAVE_PATH
 
 
 def load_and_preprocess_image(image_path: str) -> np.ndarray:
-    """Load an image file and preprocess it for MobileNetV2.
+    """Load an image file for EfficientNetB0 inference.
 
     Args:
         image_path: Path to the image file.
 
     Returns:
-        Preprocessed image as numpy array with shape (1, 224, 224, 3).
+        Image array with shape (1, 224, 224, 3).
     """
     img = Image.open(image_path).convert("RGB")
     img = img.resize(IMG_SIZE, Image.Resampling.LANCZOS)
     img_array = np.array(img, dtype=np.float32)
-
-    # MobileNetV2 preprocessing: scale to [-1, 1]
-    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
 
     # Add batch dimension
     return np.expand_dims(img_array, axis=0)

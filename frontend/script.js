@@ -419,6 +419,8 @@ function createStoredImageDataUrl(dataUrl, maxDimension = 900, quality = 0.82) {
 function normalizeDefectKey(value) {
   const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const aliases = {
+    "casting defect": "porosity",
+    casting: "porosity",
     porosity: "porosity",
     crack: "crack",
     slag: "slag",

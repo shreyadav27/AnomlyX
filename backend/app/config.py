@@ -34,17 +34,17 @@ ALLOWED_CONTENT_TYPES = {
     "image/webp",
 }
 
-# Class names matching the training order (alphabetical from Defect_Dataset/)
+# Class names matching the EfficientNetB0 training order.
 CLASS_NAMES = [
+    "Casting_Defect",
     "Corrosion",
     "Crack",
-    "Misrun",
-    "Porosity",
-    "Shrinkage",
     "Slag_Inclusion",
 ]
 
 DEFECT_ALIASES = {
+    "casting_defect": "Casting Defect",
+    "casting defect": "Casting Defect",
     "porosity": "Porosity",
     "crack": "Crack",
     "slag": "Slag Inclusion",
