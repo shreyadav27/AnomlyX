@@ -2,7 +2,7 @@
 
 AnomlyX is a frontend prototype for industrial metal defect diagnosis. It helps an inspector upload an inspection image for backend prediction or manually select a defect type and severity level, then generates visual signs, likely root causes, engineering remedies, prevention checks, and a printable inspection report.
 
-The project has a static frontend built with HTML, CSS, and JavaScript plus a FastAPI backend for image prediction. A MobileNetV2 transfer-learning model has been trained for defect-type classification; when the trained Keras model is present at `ml/saved_models/defect_classifier.keras`, the backend uses real ML inference and falls back to a filename-based placeholder only when the model is unavailable.
+The project has a static frontend built with HTML, CSS, and JavaScript plus a FastAPI backend for image prediction. An EfficientNetB0 transfer-learning model has been trained for defect-type classification; when the trained Keras model is present at `ml/saved_models/defect_classifier.keras`, the backend uses real ML inference and falls back to a filename-based placeholder only when the model is unavailable.
 
 ## Features
 
@@ -34,13 +34,13 @@ Each defect has three severity entries: low, medium, and high. Every severity en
 
 ## ML Training Status
 
-The AnomlyX defect classifier has been trained locally using MobileNetV2 transfer learning.
+The AnomlyX defect classifier has been trained locally using EfficientNetB0 transfer learning.
 
 | Item | Value |
 | --- | --- |
-| Model | MobileNetV2 + custom dense classification head |
+| Model | EfficientNetB0 + custom dense classification head |
 | Input size | 224 x 224 RGB |
-| Classes | Corrosion, Crack, Misrun, Porosity, Shrinkage, Slag_Inclusion |
+| Classes | Casting_Defect, Corrosion, Crack, Slag_Inclusion |
 | Total images | 935 |
 | Training split | 748 images |
 | Validation split | 187 images |
@@ -48,18 +48,7 @@ The AnomlyX defect classifier has been trained locally using MobileNetV2 transfe
 | Saved model path | `ml/saved_models/defect_classifier.keras` |
 | Training curve | `ml/results/training_history.png` |
 
-Dataset distribution:
-
-| Class | Images |
-| --- | ---: |
-| Corrosion | 71 |
-| Crack | 52 |
-| Misrun | 260 |
-| Porosity | 261 |
-| Shrinkage | 260 |
-| Slag_Inclusion | 31 |
-
-The trained model predicts defect type. Severity is still derived from filename hints or confidence heuristics in the backend response.
+The ML classifier currently supports 4 defect classes. The frontend manual defect library still includes the broader manual defect list for inspection and reporting.
 
 ## Project Structure
 
