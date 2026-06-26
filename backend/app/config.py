@@ -39,12 +39,15 @@ CLASS_NAMES = [
     "Casting_Defect",
     "Corrosion",
     "Crack",
+    "No_Defect",
     "Slag_Inclusion",
 ]
 
 DEFECT_ALIASES = {
     "casting_defect": "Casting Defect",
     "casting defect": "Casting Defect",
+    "no_defect": "No Defect",
+    "ok_front": "No Defect",
     "porosity": "Porosity",
     "crack": "Crack",
     "slag": "Slag Inclusion",

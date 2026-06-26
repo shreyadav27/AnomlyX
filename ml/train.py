@@ -7,7 +7,7 @@ Usage:
 Two-phase training with EfficientNetB0:
     Phase 1 — Frozen base: train only the classification head.
     Phase 2 — Fine-tune: unfreeze top EfficientNetB0 layers and train end-to-end
-              with a very low learning rate.
+              with a very low learning rate and cosine annealing schedule.
 
 Saves:
     ml/saved_models/defect_classifier.keras   — best model (by val_accuracy)
@@ -16,6 +16,7 @@ Saves:
 """
 
 import json
+import math
 
 from env_check import ensure_supported_python
 
@@ -31,6 +32,8 @@ from config import (
     CLASS_NAMES,
     EPOCHS_FINETUNE,
     EPOCHS_FROZEN,
+    FINE_TUNE_FROM,
+    LEARNING_RATE_FINETUNE,
     MODEL_SAVE_PATH,
     RESULTS_DIR,
 )
@@ -38,9 +41,30 @@ from dataset import load_datasets
 from model import build_model, get_model_summary, unfreeze_for_finetuning
 
 
-def get_callbacks(phase: str) -> list[tf.keras.callbacks.Callback]:
+class CosineAnnealingSchedule(tf.keras.callbacks.Callback):
+    """Cosine annealing learning rate schedule with warm restarts.
+
+    Smoothly decays the learning rate following a cosine curve, which has
+    been shown to improve convergence compared to step-based schedules.
+    """
+
+    def __init__(self, initial_lr: float, min_lr: float, total_epochs: int):
+        super().__init__()
+        self.initial_lr = initial_lr
+        self.min_lr = min_lr
+        self.total_epochs = total_epochs
+
+    def on_epoch_begin(self, epoch, logs=None):
+        progress = epoch / max(self.total_epochs - 1, 1)
+        lr = self.min_lr + 0.5 * (self.initial_lr - self.min_lr) * (1 + math.cos(math.pi * progress))
+        tf.keras.backend.set_value(self.model.optimizer.learning_rate, lr)
+        if epoch % 5 == 0:
+            print(f"  Cosine LR: {lr:.2e}")
+
+
+def get_callbacks(phase: str, total_epochs: int = 0) -> list[tf.keras.callbacks.Callback]:
     """Training callbacks for a given phase."""
-    return [
+    callbacks = [
         tf.keras.callbacks.ModelCheckpoint(
             filepath=str(MODEL_SAVE_PATH),
             monitor="val_accuracy",
@@ -49,18 +73,34 @@ def get_callbacks(phase: str) -> list[tf.keras.callbacks.Callback]:
         ),
         tf.keras.callbacks.EarlyStopping(
             monitor="val_accuracy",
-            patience=15 if phase == "frozen" else 12,
+            patience=15 if phase == "frozen" else 15,
             restore_best_weights=True,
             verbose=1,
         ),
-        tf.keras.callbacks.ReduceLROnPlateau(
-            monitor="val_loss",
-            factor=0.5,
-            patience=4,
-            min_lr=1e-7,
-            verbose=1,
-        ),
     ]
+
+    if phase == "frozen":
+        # Use ReduceLROnPlateau for Phase 1 (quick head training)
+        callbacks.append(
+            tf.keras.callbacks.ReduceLROnPlateau(
+                monitor="val_loss",
+                factor=0.5,
+                patience=4,
+                min_lr=1e-7,
+                verbose=1,
+            )
+        )
+    else:
+        # Use cosine annealing for Phase 2 (fine-tuning)
+        callbacks.append(
+            CosineAnnealingSchedule(
+                initial_lr=LEARNING_RATE_FINETUNE,
+                min_lr=1e-7,
+                total_epochs=total_epochs,
+            )
+        )
+
+    return callbacks
 
 
 def plot_training_history(
@@ -90,6 +130,7 @@ def plot_training_history(
     ax1.plot(epochs_range, val_acc, label="Val Accuracy", linewidth=2)
     if history_finetune:
         ax1.axvline(x=phase1_end, color="gray", linestyle="--", alpha=0.7, label="Fine-tune Start")
+    ax1.axhline(y=0.90, color="red", linestyle=":", alpha=0.5, label="90% Target")
     ax1.set_title("Model Accuracy", fontsize=14, fontweight="bold")
     ax1.set_xlabel("Epoch")
     ax1.set_ylabel("Accuracy")
@@ -116,8 +157,8 @@ def plot_training_history(
 def main() -> None:
     """Run the full two-phase training pipeline."""
     print("=" * 70)
-    print("  AnomlyX Defect Classifier — Training Pipeline (v2)")
-    print("  Backbone: EfficientNetB0 | Classes: 4")
+    print("  AnomlyX Defect Classifier — Training Pipeline (v3)")
+    print("  Backbone: EfficientNetB0 | Classes: 5 | Mixup + Cosine Annealing")
     print("=" * 70)
 
     # ── Load dataset ─────────────────────────────────────────────────────
@@ -139,6 +180,7 @@ def main() -> None:
     # ── Phase 1: Train with frozen base ──────────────────────────────────
     print("\n" + "=" * 70)
     print("  Phase 1: Training classification head (base frozen)")
+    print(f"  Epochs: {EPOCHS_FROZEN} | Early stopping patience: 15")
     print("=" * 70)
 
     history_frozen = model.fit(
@@ -156,16 +198,18 @@ def main() -> None:
     # ── Phase 2: Fine-tune top layers ────────────────────────────────────
     print("\n" + "=" * 70)
     print("  Phase 2: Fine-tuning top EfficientNetB0 layers")
+    print(f"  Epochs: {EPOCHS_FINETUNE} | Cosine annealing | LR: {LEARNING_RATE_FINETUNE}")
+    print(f"  Unfreezing from layer: {FINE_TUNE_FROM}")
     print("=" * 70)
 
-    model = unfreeze_for_finetuning(model, fine_tune_from=100)
+    model = unfreeze_for_finetuning(model, fine_tune_from=FINE_TUNE_FROM)
 
     history_finetune = model.fit(
         train_ds,
         validation_data=val_ds,
         epochs=EPOCHS_FROZEN + EPOCHS_FINETUNE,
         initial_epoch=len(history_frozen.history["accuracy"]),
-        callbacks=get_callbacks("finetune"),
+        callbacks=get_callbacks("finetune", total_epochs=EPOCHS_FINETUNE),
         class_weight=class_weights,
         verbose=1,
     )
@@ -195,6 +239,8 @@ def main() -> None:
         "class_weights": {str(k): v for k, v in class_weights.items()},
         "train_samples": train_count,
         "val_samples": val_count,
+        "target_accuracy": 0.90,
+        "target_met": bool(best_val_acc >= 0.90),
     }
     metrics_path = str(RESULTS_DIR / "training_metrics.json")
     with open(metrics_path, "w") as f:
@@ -207,6 +253,7 @@ def main() -> None:
     print("=" * 70)
     print(f"  Model saved to:    {MODEL_SAVE_PATH}")
     print(f"  Best val accuracy: {best_val_acc:.4f}")
+    print(f"  Target (90%):      {'✅ MET' if best_val_acc >= 0.90 else '❌ NOT MET'}")
     print(f"  Classes:           {class_names}")
     print(f"\n  Next steps:")
     print(f"    1. Run evaluation:  python evaluate.py")

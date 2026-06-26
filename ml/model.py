@@ -5,20 +5,23 @@ Architecture:
     → EfficientNetB0 base (pretrained ImageNet, frozen initially)
     → GlobalAveragePooling2D
     → BatchNormalization
-    → Dropout(0.3)
-    → Dense(256, ReLU)
+    → Dropout(0.4)
+    → Dense(512, ReLU, L2=1e-4)
+    → BatchNormalization
+    → Dropout(0.4)
+    → Dense(256, ReLU, L2=1e-4)
     → BatchNormalization
     → Dropout(0.3)
-    → Dense(4, Softmax)
+    → Dense(5, Softmax)
 
-Upgraded from MobileNetV2 to EfficientNetB0 for better accuracy on small
-industrial defect datasets. EfficientNetB0 uses compound scaling for
-width/depth/resolution balance.
+Upgraded architecture with deeper classification head, L2 regularization,
+and higher dropout for better generalization on small industrial defect datasets.
 """
 
 import tensorflow as tf
 
 from config import (
+    FINE_TUNE_FROM,
     IMG_SIZE,
     INPUT_SHAPE,
     LABEL_SMOOTHING,
@@ -32,6 +35,8 @@ def build_model(num_classes: int = NUM_CLASSES) -> tf.keras.Model:
     """Build the defect classifier with EfficientNetB0 backbone.
 
     Returns a compiled model with the base frozen (Phase 1 training).
+    Features a deeper classification head with L2 regularization for
+    better feature extraction and reduced overfitting.
     """
     # Input layer
     inputs = tf.keras.Input(shape=INPUT_SHAPE, name="input_image")
@@ -47,13 +52,31 @@ def build_model(num_classes: int = NUM_CLASSES) -> tf.keras.Model:
 
     x = base_model(inputs, training=False)
 
-    # Classification head — wider and more regularized than the old MobileNetV2 head
+    # Classification head — deeper with L2 regularization
     x = tf.keras.layers.GlobalAveragePooling2D(name="global_avg_pool")(x)
     x = tf.keras.layers.BatchNormalization(name="bn_1")(x)
-    x = tf.keras.layers.Dropout(0.3, name="dropout_1")(x)
-    x = tf.keras.layers.Dense(256, activation="relu", name="dense_hidden")(x)
+    x = tf.keras.layers.Dropout(0.4, name="dropout_1")(x)
+
+    # First hidden layer — wider for richer feature combinations
+    x = tf.keras.layers.Dense(
+        512,
+        activation="relu",
+        kernel_regularizer=tf.keras.regularizers.l2(1e-4),
+        name="dense_hidden_1",
+    )(x)
     x = tf.keras.layers.BatchNormalization(name="bn_2")(x)
-    x = tf.keras.layers.Dropout(0.3, name="dropout_2")(x)
+    x = tf.keras.layers.Dropout(0.4, name="dropout_2")(x)
+
+    # Second hidden layer — narrows features for classification
+    x = tf.keras.layers.Dense(
+        256,
+        activation="relu",
+        kernel_regularizer=tf.keras.regularizers.l2(1e-4),
+        name="dense_hidden_2",
+    )(x)
+    x = tf.keras.layers.BatchNormalization(name="bn_3")(x)
+    x = tf.keras.layers.Dropout(0.3, name="dropout_3")(x)
+
     outputs = tf.keras.layers.Dense(num_classes, activation="softmax", name="predictions")(x)
 
     model = tf.keras.Model(inputs=inputs, outputs=outputs, name="anomlyx_defect_classifier")
@@ -71,14 +94,14 @@ def build_model(num_classes: int = NUM_CLASSES) -> tf.keras.Model:
     return model
 
 
-def unfreeze_for_finetuning(model: tf.keras.Model, fine_tune_from: int = 100) -> tf.keras.Model:
+def unfreeze_for_finetuning(model: tf.keras.Model, fine_tune_from: int = FINE_TUNE_FROM) -> tf.keras.Model:
     """Unfreeze the top layers of the EfficientNetB0 base for Phase 2 fine-tuning.
 
     Args:
         model: The model returned by build_model().
         fine_tune_from: Layer index in the base model from which to unfreeze.
-            EfficientNetB0 has 237 layers. Default 100 unfreezes ~58% of layers
-            for deep adaptation to the industrial defect domain.
+            EfficientNetB0 has 237 layers. Default 80 unfreezes ~66% of layers
+            for deeper adaptation to the industrial defect domain.
 
     Returns:
         The same model, recompiled with a lower learning rate.

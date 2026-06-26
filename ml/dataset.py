@@ -1,14 +1,15 @@
 """Dataset loading, augmentation, and preprocessing for AnomlyX defect classification.
 
-Uses Defect_Dataset/ with a flat 4-class structure:
+Uses Defect_Dataset/ with a flat 5-class structure:
     Defect_Dataset/
-    ├── Casting_Defect/   (781 images)
-    ├── Corrosion/        (97 images)
-    ├── Crack/            (52 images)
-    └── Slag_Inclusion/   (31 images)
+    ├── Casting_Defect/   (781 images + augmented)
+    ├── Corrosion/        (97 images + augmented)
+    ├── Crack/            (52 images + augmented)
+    ├── No_Defect/        (519 images + augmented)
+    └── Slag_Inclusion/   (31 images + augmented)
 
 Includes stratified splitting, heavy augmentation for minority classes,
-and balanced class weights to handle the ~25:1 imbalance.
+Mixup training for smoother decision boundaries, and balanced class weights.
 """
 
 import random
@@ -25,6 +26,8 @@ from config import (
     CLASS_NAMES,
     DATASET_DIR,
     IMG_SIZE,
+    MIXUP_ALPHA,
+    USE_MIXUP,
     VALIDATION_SPLIT,
 )
 
@@ -32,8 +35,9 @@ from config import (
 def build_augmentation_layer() -> tf.keras.Sequential:
     """Data augmentation pipeline applied during training only.
 
-    Uses moderate augmentation to increase effective dataset size
-    without creating unrealistic defect images.
+    Uses stronger augmentation to increase effective dataset size
+    without creating unrealistic defect images. Includes GaussianNoise
+    for robustness to sensor noise in industrial environments.
     """
     aug = AUGMENTATION_CONFIG
     return tf.keras.Sequential(
@@ -44,9 +48,47 @@ def build_augmentation_layer() -> tf.keras.Sequential:
             tf.keras.layers.RandomFlip("horizontal_and_vertical"),
             tf.keras.layers.RandomBrightness(aug["brightness_range"]),
             tf.keras.layers.RandomContrast(aug["contrast_range"]),
+            tf.keras.layers.GaussianNoise(15.0),  # Noise on [0,255] scale
         ],
         name="data_augmentation",
     )
+
+
+def mixup_batch(images: tf.Tensor, labels: tf.Tensor, alpha: float = MIXUP_ALPHA) -> tuple:
+    """Apply Mixup augmentation to a batch of images and labels.
+
+    Mixup creates virtual training examples by blending pairs of images
+    and their labels. This encourages the model to learn smoother decision
+    boundaries, reducing overconfidence and improving generalization.
+
+    Args:
+        images: Batch of images (B, H, W, C).
+        labels: One-hot encoded labels (B, num_classes).
+        alpha: Beta distribution parameter controlling blend strength.
+
+    Returns:
+        Tuple of (mixed_images, mixed_labels).
+    """
+    batch_size = tf.shape(images)[0]
+
+    # Sample mixing coefficients from Beta distribution
+    lam = tf.numpy_function(
+        lambda a: np.random.beta(a, a, size=1).astype(np.float32)[0],
+        [alpha],
+        tf.float32,
+    )
+    lam = tf.maximum(lam, 1.0 - lam)  # Ensure lam >= 0.5 so original dominates
+
+    # Random permutation for pairing
+    indices = tf.random.shuffle(tf.range(batch_size))
+    shuffled_images = tf.gather(images, indices)
+    shuffled_labels = tf.gather(labels, indices)
+
+    # Blend images and labels
+    mixed_images = lam * images + (1.0 - lam) * shuffled_images
+    mixed_labels = lam * labels + (1.0 - lam) * shuffled_labels
+
+    return mixed_images, mixed_labels
 
 
 def compute_class_weights(data_dir: Path, class_names: list[str]) -> dict[int, float]:
@@ -54,12 +96,6 @@ def compute_class_weights(data_dir: Path, class_names: list[str]) -> dict[int, f
 
     Uses the sklearn 'balanced' formula:
         weight_i = n_total / (n_classes * n_samples_i)
-
-    For our 4-class dataset:
-        Casting_Defect (781 images) → low weight (~0.31)
-        Corrosion (97 images)      → moderate weight (~2.49)
-        Crack (52 images)          → high weight (~4.64)
-        Slag_Inclusion (31 images) → very high weight, clamped to 5.0
 
     Args:
         data_dir: Path to the dataset directory (with class sub-folders).
@@ -106,6 +142,7 @@ def load_datasets() -> tuple[tf.data.Dataset, tf.data.Dataset, list[str], dict[i
     print(f"Loading dataset from {DATASET_DIR}")
     print(f"  Image size: {IMG_SIZE}, Batch size: {BATCH_SIZE}")
     print(f"  Validation split: {VALIDATION_SPLIT}")
+    print(f"  Mixup: {'enabled' if USE_MIXUP else 'disabled'} (alpha={MIXUP_ALPHA})")
 
     # Verify dataset exists
     if not DATASET_DIR.exists():
@@ -189,10 +226,17 @@ def load_datasets() -> tuple[tf.data.Dataset, tf.data.Dataset, list[str], dict[i
     # for training data only.
     augmentation = build_augmentation_layer()
 
-    train_ds = train_ds.map(
-        lambda x, y: (augmentation(x, training=True), y),
-        num_parallel_calls=tf.data.AUTOTUNE,
-    )
+    def augment_fn(x, y):
+        return augmentation(x, training=True), y
+
+    def mixup_fn(x, y):
+        return mixup_batch(x, y, alpha=MIXUP_ALPHA)
+
+    train_ds = train_ds.map(augment_fn, num_parallel_calls=tf.data.AUTOTUNE)
+
+    # Apply Mixup after augmentation (on augmented images)
+    if USE_MIXUP:
+        train_ds = train_ds.map(mixup_fn, num_parallel_calls=tf.data.AUTOTUNE)
 
     # No augmentation or preprocessing for validation (EfficientNet handles it)
     # val_ds stays as-is with raw pixel values [0, 255]
